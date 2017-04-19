@@ -1,0 +1,174 @@
+
+<h1 class="sectionedit1" id="what_is_malware">What is Malware?</h1>
+<div class="level1">
+
+<p>
+Malware is called malicious software, script or code which is created and used by hackers to retrieve information of private data or gain access to any private computer systems. Malware can be trojans, viruses, spyware, adware, rootkits or any other malicious programs which can be very harmful to any computer user.
+</p>
+
+<p>
+<strong>What is Linux Malware Detect (LMD)?</strong>
+</p>
+<hr />
+
+<p>
+Linux Malware Detect (LMD) is an open source and free malware scanner and detector for Unix/Linux based operating systems, released under GNU GPLv2. It is designed to figure out threats faced by shared hosting environments. For more information and features visit at <a href="http://www.rfxn.com/projects/linux-malware-detect/" class="urlextern" title="http://www.rfxn.com/projects/linux-malware-detect/"  rel="nofollow">http://www.rfxn.com/projects/linux-malware-detect/</a>.
+</p>
+
+<p>
+<strong>Installing Linux Malware Detect (LMD) in RHEL, CentOS and Fedora</strong>
+</p>
+<hr />
+
+<p>
+Step 1: Downloading Linux Malware Detect (LMD)
+Downloading latest LMD package using following wget command.
+</p>
+<pre class="code"> # cd /tmp
+ # wget http://www.rfxn.com/downloads/maldetect-current.tar.gz
+ </pre>
+
+<p>
+<strong>Step 2: Installing LMD</strong>
+</p>
+
+<p>
+Installation and Configuration of LMD is a bit easy task, just follow below steps as root user.
+</p>
+<pre class="code"> # tar xfz maldetect-current.tar.gz
+ # cd maldetect-*
+ # ./install.sh
+ </pre>
+
+<p>
+<em>Sample Output</em>
+</p>
+<pre class="code"> Linux Malware Detect v1.4.1
+          (C) 2002-2011, R-fx Networks 
+          (C) 2011, Ryan MacDonald 
+ inotifywait (C) 2007, Rohan McGovern 
+ This program may be freely redistributed under the terms of the GNU GPL
+ installation completed to /usr/local/maldetect
+ config file: /usr/local/maldetect/conf.maldet
+ exec file: /usr/local/maldetect/maldet
+ exec link: /usr/local/sbin/maldet
+ exec link: /usr/local/sbin/lmd
+ cron.daily: /etc/cron.daily/maldet
+ maldet(3092): {sigup} performing signature update check...
+ maldet(3092): {sigup} local signature set is version 201205035915
+ maldet(3092): {sigup} new signature set (2012071115632) available
+ maldet(3092): {sigup} downloaded http://www.rfxn.com/downloads/md5.dat
+ maldet(3092): {sigup} downloaded http://www.rfxn.com/downloads/hex.dat
+ maldet(3092): {sigup} downloaded http://www.rfxn.com/downloads/rfxn.ndb
+ maldet(3092): {sigup} downloaded http://www.rfxn.com/downloads/rfxn.hdb
+ maldet(3092): {sigup} downloaded http://www.rfxn.com/downloads/maldet-clean.tgz
+ maldet(3092): {sigup} signature set update completed
+ maldet(3092): {sigup} 9649 signatures (7782 MD5 / 1867 HEX)
+ </pre>
+
+<p>
+<strong>Step 3: Configuring LMD</strong>
+</p>
+
+<p>
+By default all options are fully commented in the configuration file, so configure it according to your needs. But before making any changes let’s have a detailed review of each option below.
+</p>
+<pre class="code"> email_alert : If you would like to receive email alerts, then it should be set to 1.
+ email_subj : Set your email subject here.
+ email_addr : Add your email address to receive malware alerts.
+ quar_hits : The default quarantine action for malware hits, it should be set 1.
+ quar_clean : Cleaing detected malware injections, must set to 1.
+ quar_susp : The default suspend action for users wih hits.
+ quar_susp_minuid : Minimum userid that can be suspended.
+ </pre>
+
+<p>
+Open file /usr/local/maldetect/conf.maldet and make changes according to your needs.
+</p>
+<pre class="code"> # vi /usr/local/maldetect/conf.maldet</pre>
+
+<p>
+Sample Configuration
+Here is the my sample configuration file.
+# [ EMAIL ALERTS ]
+##
+# The default email alert toggle
+# [0 = disabled, 1 = enabled]
+email_alert=1
+</p>
+
+<p>
+# The subject line for email alerts
+email_subj=“maldet alert from $(hostname)”
+</p>
+
+<p>
+# The destination addresses for email alerts
+# [ values are comma (,) spaced ]
+email_addr=“tecmint.com@gmail.com”
+</p>
+
+<p>
+# Ignore e-mail alerts for reports in which all hits have been cleaned.
+# This is ideal on very busy servers where cleaned hits can drown out
+# other more actionable reports.
+email_ignore_clean=0
+</p>
+
+<p>
+##
+# [ QUARANTINE OPTIONS ]
+##
+# The default quarantine action for malware hits
+# [0 = alert only, 1 = move to quarantine &amp; alert]
+quar_hits=1
+</p>
+
+<p>
+# Try to clean string based malware injections
+# [NOTE: quar_hits=1 required]
+# [0 = disabled, 1 = clean]
+quar_clean=1
+</p>
+
+<p>
+# The default suspend action for users wih hits
+# Cpanel suspend or set shell /bin/false on non-Cpanel
+# [NOTE: quar_hits=1 required]
+# [0 = disabled, 1 = suspend account]
+quar_susp=0
+# minimum userid that can be suspended
+quar_susp_minuid=500
+</p>
+
+<p>
+<strong>Step 4: Manual Scans and Usage</strong>
+</p>
+<hr />
+
+<p>
+If you would like to scan user’s Home directory, then simply issue following command.
+</p>
+<pre class="code">  # maldet --scan-all /home
+  </pre>
+
+<p>
+You performed a scan but failed to turn on the quarantine option, don’t worry just use the following command to turn on and quarantine all previous malware scan results.
+</p>
+<pre class="code"> #maldet --quarantine SCANID
+ 
+ OR
+ # maldet --clean SCANID
+ </pre>
+
+<p>
+<strong>Step 5: Daily Scans</strong>
+</p>
+<hr />
+
+<p>
+By default installation keeps LMD script under /etc/cron.daily/maldet and it is used to perform a daily scans, update of signatures, quarantine etc, and sends a daily report of malware scan to your specified emails. If you need to add additional paths to be scanned, then you should edit this file accordingly to your requirements.
+</p>
+<pre class="code"> # vi /etc/cron.daily/maldet</pre>
+
+</div>

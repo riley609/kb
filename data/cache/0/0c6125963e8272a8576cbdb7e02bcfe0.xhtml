@@ -1,0 +1,37 @@
+
+<h1 class="sectionedit1" id="how_to_revert_roll_back_to_a_previous_revision_with_subversion">How to revert (roll back) to a previous revision with Subversion</h1>
+<div class="level1">
+
+<p>
+You would think that reverting to a previous version of your application would be one of the key use cases for a version control system like Subversion and that it would be trivial to do, but it&#039;s actually not intuitive at all.
+</p>
+
+<p>
+When I was first starting out with Subversion, I thought there would be a revert command that took a revision as an argument and basically rolled back your application to revision X. Alas, there is a revert command in SVN, but instead of reverting to a previous revision, it works to undo any local changes you&#039;ve made to your working copy.
+</p>
+
+<p>
+Here, then, is a very simple, plain English explanation of how to revert to a previous version of your application in Subversion, to help anyone who may be starting out with it and is lost.
+</p>
+
+<p>
+To revert to a previous version of your application (roll back changes) in Subversion, you merge the changes from your current revision back to the revision you want to revert to. So, for example, if you want to revert the trunk of your application from revision 73 to 68, you would do the following:
+</p>
+<pre class="code">  svn merge --dry-run -r:73:68 http://my.repository.com/my/project/trunk
+  svn merge -r:73:68 http://my.repository.com/my/project/trunk
+  svn commit -m &quot;Reverted to revision 68.&quot;</pre>
+
+<p>
+Step 1 will perform a dry run and show you what the merge will produce. If you want to see exactly what changes will be applied, do a diff:
+</p>
+<pre class="code">  svn diff -r:73:68 http://svn.viamedia.co.za/svn/XXXX</pre>
+
+<p>
+Step 2 actually performs the merge (you&#039;d do this after you&#039;re happy with the dry run). At this point, realize what is happening: Subversion is calculating the changes between revision 73 and revision 68 of the trunk and applying them to your working copy. For the majority of the time, you will thus want your working copy to be a fully updated copy of the revision you are reverting from (in this example, revision 73).
+</p>
+
+<p>
+Finally, since the merge happens on your local working copy, you need to commit it to the repository in Step 3.
+</p>
+
+</div>

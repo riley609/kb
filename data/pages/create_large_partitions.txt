@@ -1,0 +1,22 @@
+====== Using parted to create large partitions ======
+
+To create partitions larger than 2TB, fdisk cannot be used as the disk has to be set up with GPT.
+
+If our disk is /dev/sdd, then:
+
+===== Start parted and configure partition type =====
+
+  parted /dev/sdd
+  mklabel gpt
+
+===== Partition Whole disk =====
+
+  mkpart primary ext4 0% 100%
+  quit  
+
+===== Format disk =====
+
+  mkfs.ext4 /dev/sdd1
+
+
+----

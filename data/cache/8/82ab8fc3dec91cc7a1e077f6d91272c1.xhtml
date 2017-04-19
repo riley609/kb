@@ -1,0 +1,697 @@
+
+<h1 class="sectionedit1" id="top_30_nmap_command_examples_for_sys_network_admins">Top 30 Nmap Command Examples For Sys/Network Admins</h1>
+<div class="level1">
+
+<p>
+The purpose of this post is to introduce a user to the nmap command line tool to scan a host and/or network, so to find out the possible vulnerable points in the hosts. You will also learn how to use Nmap for offensive and defensive purposes.
+</p>
+
+<p>
+nmap in action
+</p>
+
+</div>
+<!-- EDIT1 SECTION "Top 30 Nmap Command Examples For Sys/Network Admins" [1-327] -->
+<h2 class="sectionedit2" id="more_about_nmap">More about nmap</h2>
+<div class="level2">
+
+<p>
+From the man page:
+</p>
+
+<p>
+Nmap (“Network Mapper”) is an open source tool for network exploration and security auditing. It was designed to rapidly scan large networks, although it works fine against single hosts. Nmap uses raw IP packets in novel ways to determine what hosts are available on the network, what services (application name and version) those hosts are offering, what operating systems (and <abbr title="Operating System">OS</abbr> versions) they are running, what type of packet filters/firewalls are in use, and dozens of other characteristics. While Nmap is commonly used for security audits, many systems and network administrators find it useful for routine tasks such as network inventory, managing service upgrade schedules, and monitoring host or service uptime.
+</p>
+
+<p>
+It was originally written by Gordon Lyon and it can answer the following questions easily:
+</p>
+<ol>
+<li class="level1"><div class="li"> What computers did you find running on the local network?</div>
+</li>
+<li class="level1"><div class="li"> What IP addresses did you find running on the local network?</div>
+</li>
+<li class="level1"><div class="li"> What is the operating system of your target machine?</div>
+</li>
+<li class="level1"><div class="li"> Find out what ports are open on the machine that you just scanned?</div>
+</li>
+<li class="level1"><div class="li"> Find out if the system is infected with malware or virus.</div>
+</li>
+<li class="level1"><div class="li"> Search for unauthorized servers or network service on your network.</div>
+</li>
+<li class="level1"><div class="li"> Find and remove computers which don&#039;t meet the organization&#039;s minimum level of security.</div>
+</li>
+</ol>
+
+</div>
+<!-- EDIT2 SECTION "More about nmap" [328-1673] -->
+<h2 class="sectionedit3" id="sample_setup_lab">Sample setup (LAB)</h2>
+<div class="level2">
+
+<p>
+Port scanning may be illegal in some jurisdictions. So setup a lab as follows:
+</p>
+<pre class="code">+---------+
+        +---------+           | Network |         +--------+
+        | server1 |-----------+ swtich  +---------|server2 |
+        +---------+           | (sw0)   |         +--------+
+                              +----+----+
+                                   |
+                                   |
+                         +---------+----------+
+                         | wks01 Linux/OSX    |
+                         +--------------------+</pre>
+
+<p>
+Where,
+</p>
+<ul>
+<li class="level1"><div class="li"> wks01 is your computer either running Linux/<abbr title="Operating System">OS</abbr> X or Unix like operating system. It is used for scanning your local network. The nmap command must be installed on this computer.</div>
+</li>
+<li class="level1"><div class="li"> server1 can be powered by Linux / Unix / MS-Windows operating systems. This is an unpatched server. Feel free to install a few services such as a web-server, file server and so on.</div>
+</li>
+<li class="level1"><div class="li"> server2 can be powered by Linux / Unix / MS-Windows operating systems. This is a <a href="http://www.cyberciti.biz/tips/linux-iptables-examples.html" class="urlextern" title="http://www.cyberciti.biz/tips/linux-iptables-examples.html"  rel="nofollow">fully patched server with firewall</a>. Again, feel free to install few services such as a web-server, file server and so on.</div>
+</li>
+<li class="level1"><div class="li"> All three systems are connected via switch.</div>
+</li>
+</ul>
+
+</div>
+<!-- EDIT3 SECTION "Sample setup (LAB)" [1674-2948] -->
+<h2 class="sectionedit4" id="how_do_i_install_nmap">How do I install nmap?</h2>
+<div class="level2">
+
+<p>
+See:
+</p>
+<ol>
+<li class="level1"><div class="li"> <a href="http://www.cyberciti.biz/faq/install-nmap-debian-ubuntu-server-desktop-system/" class="urlextern" title="http://www.cyberciti.biz/faq/install-nmap-debian-ubuntu-server-desktop-system/"  rel="nofollow">Debian / Ubuntu Linux: Install nmap Software For Scanning Network</a></div>
+</li>
+<li class="level1"><div class="li"> <a href="http://www.cyberciti.biz/faq/howto-install-nmap-on-centos-rhel-redhat-enterprise-linux/" class="urlextern" title="http://www.cyberciti.biz/faq/howto-install-nmap-on-centos-rhel-redhat-enterprise-linux/"  rel="nofollow">CentOS / RHEL: Install nmap Network Security Scanner</a></div>
+</li>
+<li class="level1"><div class="li"> <a href="http://www.cyberciti.biz/faq/installing-nmap-network-port-scanner-under-openbsd-using-pkg_add/" class="urlextern" title="http://www.cyberciti.biz/faq/installing-nmap-network-port-scanner-under-openbsd-using-pkg_add/"  rel="nofollow">OpenBSD: Install nmap Network Security Scanner</a></div>
+</li>
+</ol>
+
+</div>
+<!-- EDIT4 SECTION "How do I install nmap?" [2949-3443] -->
+<h2 class="sectionedit5" id="scan_a_single_host_or_an_ip_address_ipv4">#1: Scan a single host or an IP address (IPv4)</h2>
+<div class="level2">
+<pre class="code">### Scan a single ip address ###
+nmap 192.168.1.1
+
+## Scan a host name ###
+nmap server1.cyberciti.biz
+
+## Scan a host name with more info###
+nmap -v server1.cyberciti.biz</pre>
+
+<p>
+Sample outputs:
+</p>
+
+<p>
+<img src="/kb/lib/exe/fetch.php?w=592&amp;h=176&amp;tok=52e147&amp;media=linux:2_-_redhat-nmap-command-output.png" class="media" alt="" width="592" height="176" />
+</p>
+
+<p>
+Fig.01: nmap output
+</p>
+
+</div>
+<!-- EDIT5 SECTION "#1: Scan a single host or an IP address (IPv4)" [3444-3790] -->
+<h2 class="sectionedit6" id="scan_multiple_ip_address_or_subnet_ipv4">#2: Scan multiple IP address or subnet (IPv4)</h2>
+<div class="level2">
+<pre class="code">nmap 192.168.1.1 192.168.1.2 192.168.1.3
+## works with same subnet i.e. 192.168.1.0/24
+nmap 192.168.1.1,2,3</pre>
+
+<p>
+You can scan a range of IP address too:
+</p>
+<pre class="code">nmap 192.168.1.1-20</pre>
+
+<p>
+You can scan a range of IP address using a wildcard:
+</p>
+<pre class="code">nmap 192.168.1.*</pre>
+
+<p>
+Finally, you scan an entire subnet:
+</p>
+<pre class="code">nmap 192.168.1.0/24</pre>
+
+</div>
+<!-- EDIT6 SECTION "#2: Scan multiple IP address or subnet (IPv4)" [3791-4205] -->
+<h2 class="sectionedit7" id="read_list_of_hosts_networks_from_a_file_ipv4">#3: Read list of hosts/networks from a file (IPv4)</h2>
+<div class="level2">
+
+<p>
+The -iL option allows you to read the list of target systems using a text file. This is useful to scan a large number of hosts/networks. Create a text file as follows: <br/>
+<code>cat &gt; /tmp/test.txt</code> <br/>
+Sample outputs:
+</p>
+<pre class="code">server1.cyberciti.biz
+192.168.1.0/24
+192.168.1.1/24
+10.1.2.3
+localhost</pre>
+
+<p>
+The syntax is:
+</p>
+<pre class="code">nmap -iL /tmp/test.txt</pre>
+
+</div>
+<!-- EDIT7 SECTION "#3: Read list of hosts/networks from a file (IPv4)" [4206-4624] -->
+<h2 class="sectionedit8" id="excluding_hosts_networks_ipv4">#4: Excluding hosts/networks (IPv4)</h2>
+<div class="level2">
+
+<p>
+When scanning a large number of hosts/networks you can exclude hosts from a scan:
+</p>
+<pre class="code">nmap 192.168.1.0/24 --exclude 192.168.1.5
+nmap 192.168.1.0/24 --exclude 192.168.1.5,192.168.1.254</pre>
+
+<p>
+OR exclude list from a file called /tmp/exclude.txt
+</p>
+<pre class="code">nmap -iL /tmp/scanlist.txt --excludefile /tmp/exclude.txt</pre>
+
+</div>
+<!-- EDIT8 SECTION "#4: Excluding hosts/networks (IPv4)" [4625-4995] -->
+<h2 class="sectionedit9" id="turn_on_os_and_version_detection_scanning_script_ipv4">#5: Turn on OS and version detection scanning script (IPv4)</h2>
+<div class="level2">
+<pre class="code">nmap -A 192.168.1.254
+nmap -v -A 192.168.1.1
+nmap -A -iL /tmp/scanlist.txt</pre>
+
+</div>
+<!-- EDIT9 SECTION "#5: Turn on OS and version detection scanning script (IPv4)" [4996-5157] -->
+<h2 class="sectionedit10" id="find_out_if_a_host_network_is_protected_by_a_firewall">#6: Find out if a host/network is protected by a firewall</h2>
+<div class="level2">
+<pre class="code">nmap -sA 192.168.1.254
+nmap -sA server1.cyberciti.biz</pre>
+
+</div>
+<!-- EDIT10 SECTION "#6: Find out if a host/network is protected by a firewall" [5158-5296] -->
+<h2 class="sectionedit11" id="scan_a_host_when_protected_by_the_firewall">#7: Scan a host when protected by the firewall</h2>
+<div class="level2">
+<pre class="code">nmap -PN 192.168.1.1
+nmap -PN server1.cyberciti.biz</pre>
+
+</div>
+<!-- EDIT11 SECTION "#7: Scan a host when protected by the firewall" [5297-5422] -->
+<h2 class="sectionedit12" id="scan_an_ipv6_host_address">#8: Scan an IPv6 host/address</h2>
+<div class="level2">
+
+<p>
+The -6option enable IPv6 scanning. The syntax is:
+</p>
+<pre class="code">nmap -6 IPv6-Address-Here
+nmap -6 server1.cyberciti.biz
+nmap -6 2607:f0d0:1002:51::4
+nmap -v A -6 2607:f0d0:1002:51::4</pre>
+
+</div>
+<!-- EDIT12 SECTION "#8: Scan an IPv6 host/address" [5423-5649] -->
+<h2 class="sectionedit13" id="scan_a_network_and_find_out_which_servers_and_devices_are_up_and_running">#9: Scan a network and find out which servers and devices are up and running</h2>
+<div class="level2">
+
+<p>
+This is known as host discovery or ping scan:
+</p>
+<pre class="code">nmap -sP 192.168.1.0/24</pre>
+
+<p>
+Sample outputs:
+</p>
+<pre class="code">Host 192.168.1.1 is up (0.00035s latency).
+MAC Address: BC:AE:C5:C3:16:93 (Unknown)
+Host 192.168.1.2 is up (0.0038s latency).
+MAC Address: 74:44:01:40:57:FB (Unknown)
+Host 192.168.1.5 is up.
+Host nas03 (192.168.1.12) is up (0.0091s latency).
+MAC Address: 00:11:32:11:15:FC (Synology Incorporated)
+Nmap done: 256 IP addresses (4 hosts up) scanned in 2.80 second</pre>
+
+</div>
+<!-- EDIT13 SECTION "#9: Scan a network and find out which servers and devices are up and running" [5650-6217] -->
+<h2 class="sectionedit14" id="how_do_i_perform_a_fast_scan">#10: How do I perform a fast scan?</h2>
+<div class="level2">
+<pre class="code">nmap -F 192.168.1.1</pre>
+
+</div>
+<!-- EDIT14 SECTION "#10: How do I perform a fast scan?" [6218-6299] -->
+<h2 class="sectionedit15" id="display_the_reason_a_port_is_in_a_particular_state">#11: Display the reason a port is in a particular state</h2>
+<div class="level2">
+<pre class="code">nmap --reason 192.168.1.1
+nmap --reason server1.cyberciti.biz</pre>
+
+</div>
+<!-- EDIT15 SECTION "#11: Display the reason a port is in a particular state" [6300-6444] -->
+<h2 class="sectionedit16" id="only_show_open_or_possibly_open_ports">#12: Only show open (or possibly open) ports</h2>
+<div class="level2">
+<pre class="code">nmap --open 192.168.1.1
+nmap --open server1.cyberciti.biz</pre>
+
+</div>
+<!-- EDIT16 SECTION "#12: Only show open (or possibly open) ports" [6445-6574] -->
+<h2 class="sectionedit17" id="show_all_packets_sent_and_received">#13: Show all packets sent and received</h2>
+<div class="level2">
+<pre class="code">nmap --packet-trace 192.168.1.1
+nmap --packet-trace server1.cyberciti.biz</pre>
+
+</div>
+<!-- EDIT17 SECTION "#13: Show all packets sent and received" [6575-6715] -->
+<h2 class="sectionedit18" id="show_host_interfaces_and_routes">14#: Show host interfaces and routes</h2>
+<div class="level2">
+
+<p>
+This is useful for debugging (<a href="http://www.cyberciti.biz/faq/howto-linux-configuring-default-route-with-ipcommand/" class="urlextern" title="http://www.cyberciti.biz/faq/howto-linux-configuring-default-route-with-ipcommand/"  rel="nofollow">ip command</a> or <a href="http://www.cyberciti.biz/faq/what-is-a-routing-table/" class="urlextern" title="http://www.cyberciti.biz/faq/what-is-a-routing-table/"  rel="nofollow">route command</a> or <a href="http://www.cyberciti.biz/faq/linux-unix-open-ports/" class="urlextern" title="http://www.cyberciti.biz/faq/linux-unix-open-ports/"  rel="nofollow">netstat command</a> like output using nmap)
+</p>
+<pre class="code">nmap --iflist</pre>
+
+<p>
+Sample outputs:
+</p>
+<pre class="code">Starting Nmap 5.00 ( http://nmap.org ) at 2012-11-27 02:01 IST
+************************INTERFACES************************
+DEV    (SHORT)  IP/MASK          TYPE        UP MAC
+lo     (lo)     127.0.0.1/8      loopback    up
+eth0   (eth0)   192.168.1.5/24   ethernet    up B8:AC:6F:65:31:E5
+vmnet1 (vmnet1) 192.168.121.1/24 ethernet    up 00:50:56:C0:00:01
+vmnet8 (vmnet8) 192.168.179.1/24 ethernet    up 00:50:56:C0:00:08
+ppp0   (ppp0)   10.1.19.69/32    point2point up
+ 
+**************************ROUTES**************************
+DST/MASK         DEV    GATEWAY
+10.0.31.178/32   ppp0
+209.133.67.35/32 eth0   192.168.1.2
+192.168.1.0/0    eth0
+192.168.121.0/0  vmnet1
+192.168.179.0/0  vmnet8
+169.254.0.0/0    eth0
+10.0.0.0/0       ppp0
+0.0.0.0/0        eth0   192.168.1.2</pre>
+
+</div>
+<!-- EDIT18 SECTION "14#: Show host interfaces and routes" [6716-7900] -->
+<h2 class="sectionedit19" id="how_do_i_scan_specific_ports">#15: How do I scan specific ports?</h2>
+<div class="level2">
+<pre class="code">map -p [port] hostName
+## Scan port 80
+nmap -p 80 192.168.1.1
+ 
+## Scan TCP port 80
+nmap -p T:80 192.168.1.1
+ 
+## Scan UDP port 53
+nmap -p U:53 192.168.1.1
+ 
+## Scan two ports ##
+nmap -p 80,443 192.168.1.1
+ 
+## Scan port ranges ##
+nmap -p 80-200 192.168.1.1
+ 
+## Combine all options ##
+nmap -p U:53,111,137,T:21-25,80,139,8080 192.168.1.1
+nmap -p U:53,111,137,T:21-25,80,139,8080 server1.cyberciti.biz
+nmap -v -sU -sT -p U:53,111,137,T:21-25,80,139,8080 192.168.1.254
+ 
+## Scan all ports with * wildcard ##
+nmap -p &quot;*&quot; 192.168.1.1
+ 
+## Scan top ports i.e. scan $number most common ports ##
+nmap --top-ports 5 192.168.1.1
+nmap --top-ports 10 192.168.1.1</pre>
+
+<p>
+Sample outputs:
+</p>
+<pre class="code">Starting Nmap 5.00 ( http://nmap.org ) at 2012-11-27 01:23 IST
+Interesting ports on 192.168.1.1:
+PORT     STATE  SERVICE
+21/tcp   closed ftp
+22/tcp   open   ssh
+23/tcp   closed telnet
+25/tcp   closed smtp
+80/tcp   open   http
+110/tcp  closed pop3
+139/tcp  closed netbios-ssn
+443/tcp  closed https
+445/tcp  closed microsoft-ds
+3389/tcp closed ms-term-serv
+MAC Address: BC:AE:C5:C3:16:93 (Unknown)
+ 
+Nmap done: 1 IP address (1 host up) scanned in 0.51 seconds</pre>
+
+</div>
+<!-- EDIT19 SECTION "#15: How do I scan specific ports?" [7901-9108] -->
+<h2 class="sectionedit20" id="the_fastest_way_to_scan_all_your_devices_computers_for_open_ports_ever">#16: The fastest way to scan all your devices/computers for open ports ever</h2>
+<div class="level2">
+<pre class="code">nmap -T5 192.168.1.0/24</pre>
+
+</div>
+<!-- EDIT20 SECTION "#16: The fastest way to scan all your devices/computers for open ports ever" [9109-9235] -->
+<h2 class="sectionedit21" id="how_do_i_detect_remote_operating_system">#17: How do I detect remote operating system?</h2>
+<div class="level2">
+
+<p>
+You can <a href="http://www.cyberciti.biz/faq/identify-remote-host-by-unix-linux-command/" class="urlextern" title="http://www.cyberciti.biz/faq/identify-remote-host-by-unix-linux-command/"  rel="nofollow">identify a remote host apps and OS using the -O option</a>:
+</p>
+<pre class="code">nmap -O 192.168.1.1
+nmap -O  --osscan-guess 192.168.1.1
+nmap -v -O --osscan-guess 192.168.1.1</pre>
+
+<p>
+Sample outputs:
+</p>
+<pre class="code">Starting Nmap 5.00 ( http://nmap.org ) at 2012-11-27 01:29 IST
+NSE: Loaded 0 scripts for scanning.
+Initiating ARP Ping Scan at 01:29
+Scanning 192.168.1.1 [1 port]
+Completed ARP Ping Scan at 01:29, 0.01s elapsed (1 total hosts)
+Initiating Parallel DNS resolution of 1 host. at 01:29
+Completed Parallel DNS resolution of 1 host. at 01:29, 0.22s elapsed
+Initiating SYN Stealth Scan at 01:29
+Scanning 192.168.1.1 [1000 ports]
+Discovered open port 80/tcp on 192.168.1.1
+Discovered open port 22/tcp on 192.168.1.1
+Completed SYN Stealth Scan at 01:29, 0.16s elapsed (1000 total ports)
+Initiating OS detection (try #1) against 192.168.1.1
+Retrying OS detection (try #2) against 192.168.1.1
+Retrying OS detection (try #3) against 192.168.1.1
+Retrying OS detection (try #4) against 192.168.1.1
+Retrying OS detection (try #5) against 192.168.1.1
+Host 192.168.1.1 is up (0.00049s latency).
+Interesting ports on 192.168.1.1:
+Not shown: 998 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+80/tcp open  http
+MAC Address: BC:AE:C5:C3:16:93 (Unknown)
+Device type: WAP|general purpose|router|printer|broadband router 
+Running (JUST GUESSING) : Linksys Linux 2.4.X (95%), Linux 2.4.X|2.6.X (94%), MikroTik RouterOS 3.X (92%), Lexmark embedded (90%), Enterasys embedded (89%), D-Link Linux 2.4.X (89%), Netgear Linux 2.4.X (89%)
+Aggressive OS guesses: OpenWrt White Russian 0.9 (Linux 2.4.30) (95%), OpenWrt 0.9 - 7.09 (Linux 2.4.30 - 2.4.34) (94%), OpenWrt Kamikaze 7.09 (Linux 2.6.22) (94%), Linux 2.4.21 - 2.4.31 (likely embedded) (92%), Linux 2.6.15 - 2.6.23 (embedded) (92%), Linux 2.6.15 - 2.6.24 (92%), MikroTik RouterOS 3.0beta5 (92%), MikroTik RouterOS 3.17 (92%), Linux 2.6.24 (91%), Linux 2.6.22 (90%)
+No exact OS matches for host (If you know what OS is running on it, see http://nmap.org/submit/ ). 
+TCP/IP fingerprint:
+OS:SCAN(V=5.00%D=11/27%OT=22%CT=1%CU=30609%PV=Y%DS=1%G=Y%M=BCAEC5%TM=50B3CA
+OS:4B%P=x86_64-unknown-linux-gnu)SEQ(SP=C8%GCD=1%ISR=CB%TI=Z%CI=Z%II=I%TS=7
+OS:)OPS(O1=M2300ST11NW2%O2=M2300ST11NW2%O3=M2300NNT11NW2%O4=M2300ST11NW2%O5
+OS:=M2300ST11NW2%O6=M2300ST11)WIN(W1=45E8%W2=45E8%W3=45E8%W4=45E8%W5=45E8%W
+OS:6=45E8)ECN(R=Yß=Y%T=40%W=4600%O=M2300NNSNW2Ì=N%Q=)T1(R=Yß=Y%T=40%S
+OS:=O%A=S+%F=AS%RD=0%Q=)T2(R=N)T3(R=N)T4(R=Yß=Y%T=40%W=0%S=A%A=Z%F=R%O=%R
+OS:D=0%Q=)T5(R=Yß=Y%T=40%W=0%S=Z%A=S+%F=AR%O=%RD=0%Q=)T6(R=Yß=Y%T=40%W=
+OS:0%S=A%A=Z%F=R%O=%RD=0%Q=)T7(R=N)U1(R=Yß=N%T=40%IPL=164%UN=0%RIPL=G%RID
+OS:=G%RIPCK=G%RUCK=G%RUD=G)IE(R=YßI=N%T=40Í=S)
+Uptime guess: 12.990 days (since Wed Nov 14 01:44:40 2012)
+Network Distance: 1 hop
+TCP Sequence Prediction: Difficulty=200 (Good luck!)
+IP ID Sequence Generation: All zeros
+Read data files from: /usr/share/nmap
+OS detection performed. Please report any incorrect results at http://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 12.38 seconds
+   Raw packets sent: 1126 (53.832KB) | Rcvd: 1066 (46.100KB)</pre>
+
+<p>
+See also: <a href="http://www.cyberciti.biz/faq/find-out-remote-webserver-name/" class="urlextern" title="http://www.cyberciti.biz/faq/find-out-remote-webserver-name/"  rel="nofollow">Fingerprinting a web-server</a> and a <a href="http://www.cyberciti.biz/tips/howto-remotely-determine-dns-server-version.html" class="urlextern" title="http://www.cyberciti.biz/tips/howto-remotely-determine-dns-server-version.html"  rel="nofollow">dns server</a> command line tools for more information.
+</p>
+
+</div>
+<!-- EDIT21 SECTION "#17: How do I detect remote operating system?" [9236-12711] -->
+<h2 class="sectionedit22" id="how_do_i_detect_remote_services_server_daemon_version_numbers">#18: How do I detect remote services (server / daemon) version numbers?</h2>
+<div class="level2">
+<pre class="code">nmap -sV 192.168.1.1</pre>
+
+<p>
+Sample outputs:
+</p>
+<pre class="code">Starting Nmap 5.00 ( http://nmap.org ) at 2012-11-27 01:34 IST
+Interesting ports on 192.168.1.1:
+Not shown: 998 closed ports
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     **Dropbear sshd 0.52 (protocol 2.0)**
+80/tcp open  http?
+1 service unrecognized despite returning data.</pre>
+
+</div>
+<!-- EDIT22 SECTION "#18: How do I detect remote services (server / daemon) version numbers?" [12712-13143] -->
+<h2 class="sectionedit23" id="scan_a_host_using_tcp_ack_pa_and_tcp_syn_ps_ping">#19: Scan a host using TCP ACK (PA) and TCP Syn (PS) ping</h2>
+<div class="level2">
+
+<p>
+If firewall is blocking standard ICMP pings, try the following host discovery methods:
+</p>
+<pre class="code">nmap -PS 192.168.1.1
+nmap -PS 80,21,443 192.168.1.1
+nmap -PA 192.168.1.1
+nmap -PA 80,21,200-512 192.168.1.1</pre>
+
+</div>
+<!-- EDIT23 SECTION "#19: Scan a host using TCP ACK (PA) and TCP Syn (PS) ping" [13144-13424] -->
+<h2 class="sectionedit24" id="scan_a_host_using_ip_protocol_ping">#20: Scan a host using IP protocol ping</h2>
+<div class="level2">
+<pre class="code">nmap -PO 192.168.1.1</pre>
+
+</div>
+<!-- EDIT24 SECTION "#20: Scan a host using IP protocol ping" [13425-13512] -->
+<h2 class="sectionedit25" id="scan_a_host_using_udp_ping">#21: Scan a host using UDP ping</h2>
+<div class="level2">
+
+<p>
+This scan bypasses firewalls and filters that only screen TCP:
+</p>
+<pre class="code">nmap -PU 192.168.1.1
+nmap -PU 2000.2001 192.168.1.1</pre>
+
+</div>
+<!-- EDIT25 SECTION "#21: Scan a host using UDP ping" [13513-13687] -->
+<h2 class="sectionedit26" id="find_out_the_most_commonly_used_tcp_ports_using_tcp_syn_scan">#22: Find out the most commonly used TCP ports using TCP SYN Scan</h2>
+<div class="level2">
+<pre class="code">### Stealthy scan ###
+nmap -sS 192.168.1.1
+ 
+### Find out the most commonly used TCP ports using  TCP connect scan (warning: no stealth scan)
+###  OS Fingerprinting ###
+nmap -sT 192.168.1.1
+ 
+### Find out the most commonly used TCP ports using TCP ACK scan
+nmap -sA 192.168.1.1
+ 
+### Find out the most commonly used TCP ports using TCP Window scan
+nmap -sW 192.168.1.1
+ 
+### Find out the most commonly used TCP ports using TCP Maimon scan
+nmap -sM 192.168.1.1
+ </pre>
+
+</div>
+<!-- EDIT26 SECTION "#22: Find out the most commonly used TCP ports using TCP SYN Scan" [13688-14243] -->
+<h2 class="sectionedit27" id="scan_a_host_for_udp_services_udp_scan">#23: Scan a host for UDP services (UDP scan)</h2>
+<div class="level2">
+
+<p>
+Most popular services on the Internet run over the TCP protocol. <abbr title="Domain Name System">DNS</abbr>, SNMP, and DHCP are three of the most common UDP services. Use the following syntax to find out UDP services:
+</p>
+<pre class="code">nmap -sU nas03
+nmap -sU 192.168.1.1</pre>
+
+<p>
+Sample outputs:
+</p>
+<pre class="code">Starting Nmap 5.00 ( http://nmap.org ) at 2012-11-27 00:52 IST
+Stats: 0:05:29 elapsed; 0 hosts completed (1 up), 1 undergoing UDP Scan
+UDP Scan Timing: About 32.49% done; ETC: 01:09 (0:11:26 remaining)
+Interesting ports on nas03 (192.168.1.12):
+Not shown: 995 closed ports
+PORT     STATE         SERVICE
+111/udp  open|filtered rpcbind
+123/udp  open|filtered ntp
+161/udp  open|filtered snmp
+2049/udp open|filtered nfs
+5353/udp open|filtered zeroconf
+MAC Address: 00:11:32:11:15:FC (Synology Incorporated)
+ 
+Nmap done: 1 IP address (1 host up) scanned in 1099.55 seconds</pre>
+
+</div>
+<!-- EDIT27 SECTION "#23: Scan a host for UDP services (UDP scan)" [14244-15133] -->
+<h2 class="sectionedit28" id="scan_for_ip_protocol">#24: Scan for IP protocol</h2>
+<div class="level2">
+
+<p>
+This type of scan allows you to determine which IP protocols (TCP, ICMP, IGMP, etc.) are supported by target machines:
+</p>
+<pre class="code">nmap -sO 192.168.1.1</pre>
+
+</div>
+<!-- EDIT28 SECTION "#24: Scan for IP protocol" [15134-15327] -->
+<h2 class="sectionedit29" id="scan_a_firewall_for_security_weakness">#25: Scan a firewall for security weakness</h2>
+<div class="level2">
+
+<p>
+The following scan types exploit a subtle loophole in the TCP and good for testing security of common attacks:
+</p>
+<pre class="code">## TCP Null Scan to fool a firewall to generate a response ##
+## Does not set any bits (TCP flag header is 0) ##
+nmap -sN 192.168.1.254
+ 
+## TCP Fin scan to check firewall ##
+## Sets just the TCP FIN bit ##
+nmap -sF 192.168.1.254
+ 
+## TCP Xmas scan to check firewall ##
+## Sets the FIN, PSH, and URG flags, lighting the packet up like a Christmas tree ##
+nmap -sX 192.168.1.254</pre>
+
+<p>
+See <a href="http://www.cyberciti.biz/tips/linux-iptables-10-how-to-block-common-attack.html" class="urlextern" title="http://www.cyberciti.biz/tips/linux-iptables-10-how-to-block-common-attack.html"  rel="nofollow">how to block Xmas packkets, syn-floods and other conman attacks</a> with iptables.
+</p>
+
+</div>
+<!-- EDIT29 SECTION "#25: Scan a firewall for security weakness" [15328-16057] -->
+<h2 class="sectionedit30" id="scan_a_firewall_for_packets_fragments">#26: Scan a firewall for packets fragments</h2>
+<div class="level2">
+
+<p>
+The -f option causes the requested scan (including ping scans) to use tiny fragmented IP packets. The idea is to split up the TCP header over <br/>
+several packets to make it harder for packet filters, intrusion detection systems, and other annoyances to detect what you are doing.
+</p>
+<pre class="code">nmap -f 192.168.1.1
+nmap -f fw2.nixcraft.net.in
+nmap -f 15 fw2.nixcraft.net.in
+## Set your own offset size with the --mtu option ##
+nmap --mtu 32 192.168.1.1</pre>
+
+</div>
+<!-- EDIT30 SECTION "#26: Scan a firewall for packets fragments" [16058-16567] -->
+<h2 class="sectionedit31" id="cloak_a_scan_with_decoys">#27: Cloak a scan with decoys</h2>
+<div class="level2">
+
+<p>
+The -Doption it appear to the remote host that the host(s) you specify as <a href="http://www.cyberciti.biz/tips/nmap-hide-ipaddress-with-decoy-ideal-scan.html" class="urlextern" title="http://www.cyberciti.biz/tips/nmap-hide-ipaddress-with-decoy-ideal-scan.html"  rel="nofollow">decoys are scanning the target network too</a>. Thus their IDS might report 5-10 port scans from unique IP addresses, but they won&#039;t know which IP was scanning them and which were innocent decoys:
+</p>
+<pre class="code">nmap -n -Ddecoy-ip1,decoy-ip2,your-own-ip,decoy-ip3,decoy-ip4 remote-host-ip
+nmap -n -D192.168.1.5,10.5.1.2,172.1.2.4,3.4.2.1 192.168.1.5</pre>
+
+</div>
+<!-- EDIT31 SECTION "#27: Cloak a scan with decoys" [16568-17112] -->
+<h2 class="sectionedit32" id="scan_a_firewall_for_mac_address_spoofing">#28: Scan a firewall for MAC address spoofing</h2>
+<div class="level2">
+<pre class="code">### Spoof your MAC address ##
+nmap --spoof-mac MAC-ADDRESS-HERE 192.168.1.1
+ 
+### Add other options ###
+nmap -v -sT -PN --spoof-mac MAC-ADDRESS-HERE 192.168.1.1
+ 
+ 
+### Use a random MAC address ###
+### The number 0, means nmap chooses a completely random MAC address ###
+nmap -v -sT -PN --spoof-mac 0 192.168.1.1
+ </pre>
+
+</div>
+<!-- EDIT32 SECTION "#28: Scan a firewall for MAC address spoofing" [17113-17501] -->
+<h2 class="sectionedit33" id="how_do_i_save_output_to_a_text_file">#29: How do I save output to a text file?</h2>
+<div class="level2">
+
+<p>
+The syntax is:
+</p>
+<pre class="code">nmap 192.168.1.1 &gt; output.txt
+nmap -oN /path/to/filename 192.168.1.1
+nmap -oN output.txt 192.168.1.1</pre>
+
+</div>
+<!-- EDIT33 SECTION "#29: How do I save output to a text file?" [17502-17688] -->
+<h2 class="sectionedit34" id="not_a_fan_of_command_line_tools">#30: Not a fan of command line tools?</h2>
+<div class="level2">
+
+<p>
+Try <a href="http://nmap.org/zenmap/" class="urlextern" title="http://nmap.org/zenmap/"  rel="nofollow">zenmap the official network mapper</a> front end:
+</p>
+
+<p>
+Zenmap is the official Nmap Security Scanner <abbr title="Graphical User Interface">GUI</abbr>. It is a multi-platform (Linux, Windows, Mac <abbr title="Operating System">OS</abbr> X, BSD, etc.) free and open source application which aims to make Nmap easy for beginners to use while providing advanced features for experienced Nmap users. Frequently used scans can be saved as profiles to make them easy to run repeatedly. A command creator allows interactive creation of Nmap command lines. Scan results can be saved and viewed later. Saved scan results can be compared with one another to see how they differ. The results of recent scans are stored in a searchable database.
+</p>
+
+<p>
+You can install zenmap using the following <a href="http://www.cyberciti.biz/tips/linux-debian-package-management-cheat-sheet.html" class="urlextern" title="http://www.cyberciti.biz/tips/linux-debian-package-management-cheat-sheet.html"  rel="nofollow">apt-get command</a>: <br/>
+
+<code>$ sudo apt-get install zenmap</code> <br/>
+Sample outputs:
+</p>
+<pre class="code">[sudo] password for vivek:
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+The following NEW packages will be installed:
+  zenmap
+0 upgraded, 1 newly installed, 0 to remove and 11 not upgraded.
+Need to get 616 kB of archives.
+After this operation, 1,827 kB of additional disk space will be used.
+Get:1 http://debian.osuosl.org/debian/ squeeze/main zenmap amd64 5.00-3 [616 kB]
+Fetched 616 kB in 3s (199 kB/s)
+Selecting previously deselected package zenmap.
+(Reading database ... 281105 files and directories currently installed.)
+Unpacking zenmap (from .../zenmap_5.00-3_amd64.deb) ...
+Processing triggers for desktop-file-utils ...
+Processing triggers for gnome-menus ...
+Processing triggers for man-db ...
+Setting up zenmap (5.00-3) ...
+Processing triggers for python-central ...</pre>
+
+<p>
+Type the following command to start zenmap: <br/>
+<code>$ sudo zenmap</code> <br/>
+Sample outputs
+</p>
+
+<p>
+<a href="/kb/lib/exe/fetch.php?media=linux:3_-_zenmap-usage-examples-output.png" class="media wikilink2" title="linux:3_-_zenmap-usage-examples-output.png"><img src="/kb/lib/exe/fetch.php?w=592&amp;h=640&amp;tok=38c56b&amp;media=linux:3_-_zenmap-usage-examples-output.png" class="media" alt="" width="592" height="640" /></a>
+</p>
+
+<p>
+Fig.02: zenmap in action
+</p>
+
+</div>
+<!-- EDIT34 SECTION "#30: Not a fan of command line tools?" [17689-19625] -->
+<h2 class="sectionedit35" id="how_do_i_detect_and_block_port_scanning">How do I detect and block port scanning?</h2>
+<div class="level2">
+
+<p>
+Try the following resources:
+</p>
+<ol>
+<li class="level1"><div class="li"> <a href="http://www.cyberciti.biz/faq/linux-detect-port-scan-attacks/" class="urlextern" title="http://www.cyberciti.biz/faq/linux-detect-port-scan-attacks/"  rel="nofollow">How to use psad tool to detect and block port scan attacks in real time</a>.</div>
+</li>
+<li class="level1"><div class="li"> <a href="http://www.cyberciti.biz/faq/debian-ubuntu-linux-shorewall-firewall-configuration/" class="urlextern" title="http://www.cyberciti.biz/faq/debian-ubuntu-linux-shorewall-firewall-configuration/"  rel="nofollow">Debian / Ubuntu Linux: Install and Configure Shoreline Firewall (Shorewall)</a>.</div>
+</li>
+<li class="level1"><div class="li"> <a href="http://www.cyberciti.biz/faq/rhel-fedorta-linux-iptables-firewall-configuration-tutorial/" class="urlextern" title="http://www.cyberciti.biz/faq/rhel-fedorta-linux-iptables-firewall-configuration-tutorial/"  rel="nofollow">CentOS / Redhat Iptables Firewall Configuration Tutorial</a>.</div>
+</li>
+<li class="level1"><div class="li"> <a href="http://www.cyberciti.biz/tips/linux-iptables-examples.html" class="urlextern" title="http://www.cyberciti.biz/tips/linux-iptables-examples.html"  rel="nofollow">Linux: 20 Iptables Examples For New SysAdmins</a>.</div>
+</li>
+<li class="level1"><div class="li"> <a href="http://www.cyberciti.biz/tips/linux-security.html" class="urlextern" title="http://www.cyberciti.biz/tips/linux-security.html"  rel="nofollow">20 Linux Server Hardening Security Tips</a>.</div>
+</li>
+</ol>
+
+</div>
+
+<h5 id="references">REFERENCES:</h5>
+<div class="level5">
+<ul>
+<li class="level1"><div class="li"> <a href="http://nmap.org/book/toc.html" class="urlextern" title="http://nmap.org/book/toc.html"  rel="nofollow">The official Nmap project guide to network discovery and security Scanning</a>.</div>
+</li>
+<li class="level1"><div class="li"> <a href="http://nmap.org/" class="urlextern" title="http://nmap.org/"  rel="nofollow">The official Nmap project</a> home page.</div>
+</li>
+</ul>
+
+<p>
+<em>The nmap command has many more options, please go through man page or the documentation for more information.</em>
+</p>
+
+</div>
+<!-- EDIT35 SECTION "How do I detect and block port scanning?" [19626-] -->

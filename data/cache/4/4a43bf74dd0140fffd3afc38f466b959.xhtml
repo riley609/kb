@@ -1,0 +1,81 @@
+
+<h1 class="sectionedit1" id="creating_local_yum_repository_repo">Creating local YUM Repository(repo)</h1>
+<div class="level1">
+
+<p>
+<strong>Create the directory structure of the repository</strong>
+</p>
+
+<p>
+-Copy the base RPMs
+-Create the base repository headers
+-Select an rsync mirror.
+-Rsync the updates-released repository
+-Creating a new repo entry
+</p>
+
+<p>
+<strong>Before starting please install the createrepo package</strong>
+</p>
+<pre class="code"># sudo yum -y install createrepo</pre>
+
+<p>
+<strong>Create the Directories:</strong>
+</p>
+<pre class="code">mkdir /var/www/html/yum
+mkdir /var/www/html/yum/base
+mkdir /var/www/html/yum/updates</pre>
+
+<p>
+<em>Copy the RPMs from the CDs/DVD to /var/www/html/yum/base if you have otherwise all the data will be downloaded from the internet which will take a lot of time.</em>
+</p>
+
+<p>
+<strong>Create the base repository headers:</strong>
+</p>
+
+<p>
+ # sudo createrepo /var/www/html/yum/base
+</p>
+
+<p>
+<em>This will going to take sometime depeding upon how much fast hardware you have. After successful completion, there should be a directory with name “repodata” inside base which will contain files like this:
+“filelists.xml.gz, other.xml.gz, primary.xml.gz, repomd.xml”</em>
+</p>
+
+<p>
+<strong>Select a rsync mirror for updates:</strong>
+</p>
+
+<p>
+The list of mirrors could be get from here – <a href="http://fedora.redhat.com/download/mirrors.html" class="urlextern" title="http://fedora.redhat.com/download/mirrors.html"  rel="nofollow">http://fedora.redhat.com/download/mirrors.html</a>. All the mirrors share the common structure for updates. Simply append /updates/$version/$base-arch which will look like this:
+</p>
+<pre class="code">rsync://distro.ibiblio.org/fedora-linux-core/updates/4/i386</pre>
+
+<p>
+Rsync to create the updates-released repository:
+</p>
+<pre class="code"># rsync -av rsync://distro.ibiblio.org/fedora-linux-core/updates/4/i386 -exclude=debug/    /var/www/html/yum/upates</pre>
+
+<p>
+After completion there will be complete update repository at /var/www/html/yum/upates/i386. As you will need to run this rsync command from time to time so that you keep your repository updated with the new updates so make a cron job for this, which will rsync the data for you from time to time.
+</p>
+
+<p>
+<strong>Creating a new repo entry on client:</strong>
+</p>
+
+<p>
+<strong>Create a new file local.repo in /etc/yum.repos.d/ and put this content inside that:[base]</strong>
+</p>
+<pre class="code">name=Fedora Core $releasever – $basearch – Base
+baseurl=http://192.168.x.xx/yum/Fedora/core/$releasever/base/RPMS
+enabled=1
+gpgcheck=1
+[updates-released]
+name=Fedora Core $releasever – $basearch – Released Updates
+baseurl=http://192.168.x.xx/yum/updates/$basearch/
+enabled=1
+gpgcheck=1</pre>
+
+</div>

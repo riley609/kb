@@ -1,0 +1,108 @@
+
+<h1 class="sectionedit1" id="change_mysql_root_password">Change Mysql root Password</h1>
+<div class="level1">
+
+<p>
+<strong>Changing Password with mysqladmin command:</strong>
+</p>
+
+<p>
+mysqladmin command is one way to interact with the information stored in user table from <abbr title="Operating System">OS</abbr> command line interface. If you have done a fresh installation of Mysql, then there is no password set for root user. To set a new password for the same, use this command:
+</p>
+<pre class="code">$ mysqladmin -u root password NEWPASSWORD</pre>
+
+<p>
+This will create the password for the root user.
+</p>
+
+<p>
+Also, to change the password of root user, one needs to use the command like this:
+</p>
+<pre class="code">$ mysqladmin -u root -p&#039;oldpassword&#039; password &#039;NEWPASSWORD&#039;</pre>
+
+<p>
+If you don’t provide any old password with “-p”, then it will prompt you for a pasword after executing this command.
+</p>
+
+<p>
+<strong>To change the password of normal user, same procedure is followed:</strong>
+</p>
+<pre class="code">$ mysqladmin -u myuser -p&#039;oldpassword&#039; password &#039;NEWPASSWORD&#039;</pre>
+
+<p>
+<strong>Changing password with Mysql sql command:</strong>
+</p>
+
+<p>
+You can also update the information in the user table with the sql command. Following steps needs to be followed for the same.
+</p>
+
+<p>
+<strong>Login to Mysql server</strong>
+</p>
+<pre class="code">$ mysql -u root -p&#039;password&#039;</pre>
+
+<p>
+Go to mysql database
+</p>
+<pre class="code">mysql&gt; use mysql;</pre>
+
+<p>
+Change password for test user
+</p>
+<pre class="code">mysql&gt; update user set password=PASSWORD(&quot;NEWPASSWORD&quot;) where user=&quot;test&quot;;</pre>
+
+<p>
+Now reload the privileges, which will update the cache and flush the old password
+</p>
+<pre class="code">mysql&gt; flush privileges;</pre>
+<pre class="code">mysql&gt; ctrl+D</pre>
+
+</div>
+<div class="level1">
+
+</div>
+<!-- EDIT1 SECTION "Change Mysql root Password" [1-1453] -->
+<h1 class="sectionedit2" id="reset_a_lost_root_mysql_user_password">Reset a lost root MySQL user password:</h1>
+<div class="level1">
+
+<p>
+<strong>Stop Mysql Server:</strong>
+</p>
+<pre class="code">$ sudo /etc/init.d/mysql stop</pre>
+
+<p>
+Then, start the mysql server with skip-grant-tables options. –skip-grant-tables option will force the mysql process not to read the user table into memory, so that when you try to login to the Mysql server, it won’t ask for the password.
+</p>
+<pre class="code">$ sudo mysqld_safe --skip-grant-tables  &amp;</pre>
+
+<p>
+This command is very dangerous if you Mysql server is connected to the network. While you are recovering your password, someone can login to your server remotely and do whatever he/she wants. To keep that safe, start your server with “–skip-networking” option, which will not open a network port for the server
+</p>
+<pre class="code">$ mysqld_safe --skip-grant-tables --skip-networking &amp;</pre>
+
+<p>
+Now connect to mysql server using mysql client without giving any password
+</p>
+<pre class="code">$ mysql -u root -p</pre>
+
+<p>
+Now setup the new password for the root user:
+</p>
+<pre class="code">mysql&gt; use mysql;</pre>
+<pre class="code">mysql&gt; update user set password=PASSWORD(&quot;NEWPASSWORD&quot;) where user=&quot;root&quot;;</pre>
+<pre class="code">mysql&gt; flush privileges;</pre>
+<pre class="code">mysql&gt; Ctrl+D</pre>
+
+<p>
+Now stop the mysql server
+</p>
+<pre class="code">$ sudo /etc/init.d/mysql stop</pre>
+
+<p>
+Now start the mysql server normally, so that it could read the password information.
+</p>
+<pre class="code">$ sudo /etc/init.d/mysql start</pre>
+
+</div>
+<!-- EDIT2 SECTION "Reset a lost root MySQL user password:" [1454-] -->

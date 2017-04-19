@@ -1,0 +1,76 @@
+====== A complete guide to git-svn conversions ======
+
+
+Our goal is to do a complete conversion of our Subversion repository and end up with a bare Git repository acceptable for sharing with others (privately or publicly). Bare repositories are ones without a local working checkout of the files available for modifications. They are the recommended format for shared repositories.
+
+**1. Retrieve a list of all Subversion committers**
+
+Subversion simply lists the username for each commit. Git’s commits have much richer data, but at its simplest, the commit author needs to have a name and email listed. By default the git-svn tool will just list the SVN username in both the author and email fields. But with a little bit of work, you can create a list of all SVN users and what their corresponding Git name and emails are. This list can be used by git-svn to transform plain svn usernames into proper Git committers.
+
+From the root of your local Subversion checkout, run this command:
+
+<code>svn log -q | awk -F '|' '/^r/ {sub("^ ", "", $2); sub(" $", "", $2); print $2" = "$2" <"$2">"}' | sort -u > authors-transform.txt</code>
+
+That will grab all the log messages, pluck out the usernames, eliminate any duplicate usernames, sort the usernames and place them into a “authors-transform.txt” file. Now edit each line in the file. For example, convert:
+<code>
+jwilkins = jwilkins <jwilkins>
+into this:
+
+jwilkins = John Albin Wilkins <johnalbin@example.com>
+</code>
+
+**2. Clone the Subversion repository using git-svn**
+
+  git svn clone [SVN repo URL] --no-metadata -A authors-transform.txt --stdlayout ~/temp
+  
+This will do the standard git-svn transformation (using the authors-transform.txt file you created in step 
+
+1) and place the git repository in the “~/temp” folder inside your home directory.
+
+3. Convert svn:ignore properties to .gitignore
+
+If your svn repo was using svn:ignore properties, you can easily convert this to a .gitignore file using:
+
+  cd ~/temp
+  git svn show-ignore > .gitignore
+  git add .gitignore
+  git commit -m 'Convert svn:ignore properties to .gitignore.'
+
+**4. Push repository to a bare git repository**
+
+**First, create a bare repository and make its default branch match svn’s “trunk” branch name.**
+
+  git init --bare ~/new-bare.git
+  cd ~/new-bare.git
+  git symbolic-ref HEAD refs/heads/trunk
+  
+Then push the temp repository to the new bare repository.
+
+  cd ~/temp
+  git remote add bare ~/new-bare.git
+  git config remote.bare.push 'refs/remotes/*:refs/heads/*'
+  git push bare
+  
+You can now safely delete the ~/temp repository.
+
+**5. Rename “trunk” branch to “master”**
+
+Your main development branch will be named “trunk” which matches the name it was in Subversion. You’ll want to rename it to Git’s standard “master” branch using:
+
+  cd ~/new-bare.git
+  git branch -m trunk master
+  
+**6. Clean up branches and tags**
+
+git-svn makes all of Subversions tags into very-short branches in Git of the form “tags/name”. You’ll want to convert all those branches into actual Git tags using:
+<code>
+  cd ~/new-bare.git
+  git for-each-ref --format='%(refname)' refs/heads/tags |
+  cut -d / -f 4 |
+  while read ref
+  do
+  git tag "$ref" "refs/heads/tags/$ref";
+  git branch -D "tags/$ref";
+ done
+</code>
+This step will take a bit of typing. :-) But, don’t worry; your unix shell will provide a > secondary prompt for the extra-long command that starts with git for-each-ref.

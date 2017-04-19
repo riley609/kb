@@ -1,0 +1,32 @@
+====== How to install Gitalist git Web Browser ======
+
+   Download Latest Stable Version from http://gitlist.org
+
+Extract to Apache webserver folder
+Copy config.ini.example to config.ini
+Add repositories[] =   (This is path to repos)
+Add baseurl= under [app]
+   //baseurl = 'http://localhost/gitlist' ;//
+
+Restart apache and test. If not working correctly, see below:
+--------------------------
+
+//
+**Restrictive apache2 configuration (linux)**//
+
+You can face some issues if AllowOverride is disabled and/or FollowSymLinks option is off in your main configuration. To overcome this, create a file named gitlist.conf inside the /etc/apache2/conf.d/ folder with this content :
+
+   Alias /gitlist /srv/www/htdocs/gitlist/
+   <Directory /srv/www/htdocs/gitlist>
+      Options FollowSymLinks
+      AllowOverride All
+   </Directory>
+
+
+/srv/www/htdocs/ is the default htdocs path on some GNU/Linux setups, you must change it to the actual htdocs base path if it is different.
+
+Note: With Apache 2.4, the default configuration folder has changed from /etc/apache2/conf.d to /etc/apache2/conf-available. So if you're using Apache 2.4, you need to put the aforementioned gitlist.conf into /etc/apache2/conf-available. Then you need to activate it (symlink it from 'conf-available' to 'conf-enabled') with
+
+     a2enconf gitlist
+     
+and restart Apache.

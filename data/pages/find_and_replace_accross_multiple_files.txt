@@ -1,0 +1,19 @@
+====== FIND & REPLACE ACROSS MULTIPLE FILES IN LINUX ======
+
+A solution to do a find & replace across multiple files which was purely command line based.
+
+  find . -name "*.php" -print | xargs sed -i 's/foo/bar/g'
+
+It looks a bit complicated but its quite simple. There are three components to the command:
+
+  find . -name "*.php" -print – Find all files (recursively) which has “.php” in the file and print them out. This will give you output like this:
+  ./file.php
+  ./includes/test.php
+  ./classes/class.php
+
+  xargs- This command is used when you want to pass a lot of arguments to one command. xargs will combine the single line output of find and run commands   with multiple
+  arguments, multiple times if necessary to avoid the max chars per line limit. In this case we combine xargs with sed
+
+  sed -i 's/foo/bar/g' – aka Stream Editor is a tool which should be in every sys admin’s toolkit.  In this case every occurence of “foor” is replaced by   “bar” in all the files found using the “find” command. Sed simply parses input and applies certain text transformations to it.
+
+This pretty much covers the core of the find & replace command. You could also open up a particular folder in an IDE and use it’s find and replace feature. But find + sed is quite fast and powerful.

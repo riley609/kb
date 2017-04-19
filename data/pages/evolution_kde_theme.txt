@@ -1,0 +1,41 @@
+ instructions that will resolve both the missing icons and the ugly theme issues:
+Install the following packages: gtk3-engines-unico gtk2-engines-murrine gtk2-engines-pixbuf humanity-icon-theme
+Download the http://gnome-look.org/content/show.php/Zukitwo?content=140562"]Zukitwo theme[/url] from gnome-look.org.
+Follow the included instructions to install it (installing to ~/.themes works fine).
+Create the file /home/username/.config/gtk-3.0/settings.ini (replacing "username" with your login name) with the following contents:
+Code:
+[Settings]
+gtk-theme-name = Zukitwo
+gtk-fallback-icon-theme = Humanity
+# next option is applicable only if selected theme supports it
+gtk-application-prefer-dark-theme = false
+# set font name and dimension
+gtk-font-name = Ubuntu 9
+[/list]
+These changes will affect all GTK3 apps, not just Evolution.
+
+Now, to address the gnome-keyring issue: The problem is that the gnome-keyring is not being logged into when the user logs into the desktop session. Here is what I did to solve this:
+[list][*]Install the following packages: gnome-keyring libpam-gnome-keyring seahorse[*]Add the following two lines to /etc/pam.d/kdm:
+Code:
+auth    optional   pam_gnome_keyring.so try_first_pass
+session  optional   pam_gnome_keyring.so auto_start
+...but they must be added in the correct spot, so the resultant file should look like this:
+Code:
+#
+# /etc/pam.d/kdm - specify the PAM behaviour of kdm
+#
+auth    required   pam_nologin.so
+auth    required   pam_env.so readenv=1
+auth    required   pam_env.so readenv=1 envfile=/etc/default/locale
+@include common-auth
+auth    optional   pam_gnome_keyring.so try_first_pass
+session  required   pam_limits.so
+@include common-account
+@include common-password
+@include common-session
+session  optional   pam_gnome_keyring.so auto_start
+[*]Add the following line to the end of /etc/pam.d/passwd:
+Code:
+password  optional  pam_gnome_keyring.so
+Run seahorse and delete the default keyring and create a new keyring called “login” with a password identical to your login password. Set this as default.
+Reboot and cross your fingers, legs, etc. and hope it works. If all went well, you shouldn't be prompted to enter your keyring password.

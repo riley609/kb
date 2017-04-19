@@ -1,0 +1,40 @@
+====== Mount network shares (Linux) ======
+
+The fileserver is a Windows Server.\\
+To mount network shares on a Windows Server two packages must be available on your Linux computer:\\
+''smbclient'' and ''cifs-utils''
+
+**1. Check the availability of network shares on viam-fs001.viamedia.co.za:**
+     smbclient -L servername -U your.username
+
+**2. Mount e.g. the network share name ''data'' into your local file system:**
+
+a) Create a local mount point e.g. ''VM-data'' in your home directory:
+     mkdir /home/your_username/VM-data
+
+b) Mount the network share ''data'' to your local moint point:
+     sudo mount -t cifs -o username=your.username,rw,gid=1000,uid=1000 //servername.mydomain.co.za/data VM-data
+
+
+<code bash homedir_mount.sh>
+#!/bin/bash
+AUTHNAME="my.username"
+CREDS="credentials=/home/${USER}/credentials.viam,iocharset=utf8,rw,gid=1000,uid=1000"
+MOUNT1=/home/${USER}/NET_DIR
+MOUNT2=/home/${USER}/NET/DATA
+MOUNT3=/home/${USER}/NET/ENTERTAIN
+MOUNT4=/home/${USER}/NET/ENTERTAIN2
+
+mountpoint -q ${MOUNT1}  || sudo mount.cifs //192.168.12.11/home$/${AUTHNAME} ${MOUNT1} -o ${CREDS}
+mountpoint -q ${MOUNT2}  || sudo mount.cifs //192.168.12.11/data ${MOUNT2} -o ${CREDS}
+mountpoint -q ${MOUNT3}  || sudo mount.cifs //192.168.12.11/entertainment ${MOUNT3} -o ${CREDS}
+mountpoint -q ${MOUNT4}  || sudo mount.cifs //192.168.12.11/entertainment2 ${MOUNT4} -o ${CREDS}
+
+</code>
+
+<code config credentials.viam>
+
+username=my.username
+password=**********
+domain=mydomain
+</code>

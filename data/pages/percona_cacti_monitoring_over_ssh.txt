@@ -1,0 +1,82 @@
+Installing “Percona Monitoring Plugins for Cacti”
+
+Download the plugins from Percona website: Percona - Download percona-monitoring-plugins
+
+1
+wget http://www.percona.com/redir/downloads/percona-monitoring-plugins/percona-monitoring-plugins-1.0.1.tar.gz
+Extract the file, and copy ss_get_by_ssh.php to Cacti script folder:
+
+1
+2
+tar zxvf percona-monitoring-plugins-1.0.1.tar.gz
+cp percona-monitoring-plugins-1.0.1/cacti/scripts/ss_get_by_ssh.php /usr/share/cacti/site/scripts/
+Edit /usr/share/cacti/site/scripts/ss_get_by_ssh.php with your remote user name and the path to the SSH identity from step 4.
+
+1
+2
+$ssh_user   = 'cacti';                          # SSH username
+$ssh_iden   = '-i /var/www/cacti/.ssh/id_rsa';  # SSH identity
+6) Importing the template
+
+Inside the tar file you will find different templates:
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+/percona-monitoring-plugins-1.0.1/cacti/templates# ls -lrt
+total 1644
+-rw-r--r-- 1 501 root 169078 Jun 15 04:44 cacti_host_template_percona_openvz_server_ht_0.8.6i-sver1.0.1.xml
+-rw-r--r-- 1 501 root  41926 Jun 15 04:44 cacti_host_template_percona_nginx_server_ht_0.8.6i-sver1.0.1.xml
+-rw-r--r-- 1 501 root 843345 Jun 15 04:44 cacti_host_template_percona_mysql_server_ht_0.8.6i-sver1.0.1.xml
+-rw-r--r-- 1 501 root  89553 Jun 15 04:44 cacti_host_template_percona_mongodb_server_ht_0.8.6i-sver1.0.1.xml
+-rw-r--r-- 1 501 root  75491 Jun 15 04:44 cacti_host_template_percona_memcached_server_ht_0.8.6i-sver1.0.1.xml
+-rw-r--r-- 1 501 root  53416 Jun 15 04:44 cacti_host_template_percona_jmx_server_ht_0.8.6i-sver1.0.1.xml
+-rw-r--r-- 1 501 root 249175 Jun 15 04:44 cacti_host_template_percona_gnu_linux_server_ht_0.8.6i-sver1.0.1.xml
+-rw-r--r-- 1 501 root  73879 Jun 15 04:44 cacti_host_template_percona_apache_server_ht_0.8.6i-sver1.0.1.xml
+-rw-r--r-- 1 501 root  37198 Jun 15 04:44 cacti_host_template_percona_redis_server_ht_0.8.6i-sver1.0.1.xml
+In our case, we are only interested in cacti_host_template_percona_gnu_linux_server_ht_0.8.6i-sver1.0.1.xml
+
+Console -> Import Templates -> Import template:
+
+7) Create a new device
+
+Under Console -> Devices, add a new device:
+
+And complete the information (name, IP)
+
+8) Modify the data template and the data source (I will use “Percona Disk Space DT” as example)
+
+Check the Percona Data Templates availables:
+
+Console -> Data Templates
+
+Click in the name (Percona Disk Space DT) and let’s edit the template. Go to the bottom of the page, and check “Custom Data”:
+
+Add Percona Disk Space DT as new data source for your host. Under Console -> Data Sources, click new:
+
+Set the Remote IP and the partition (or volumen) to monitor
+
+9) Create the graph
+
+We have already created the data source for our remote server, so now, we just have to create a new graph.
+
+Under Console -> Graph Management, add a new graph:
+
+And select our data source (Percona Disk Space DT) for the device:
+
+10) Result
+
+At this point, the graph should be created, and after a few minutes, you should see something like this:
+
+If something goes wrong, take a look at /var/log/cacti/cacti.log. There should be a line similar to this one:
+
+1
+<DATE> - CMDPHP: Poller[0] Host[3] DS[25] CMD: /usr/bin/php -q /usr/share/cacti/site/scripts/ss_get_by_ssh.php --host <REMOTE_IP> --type proc_stat --items gg,gh,gi,gj,gk,gl,gm,gn,go, output: gg:50994 gh:0 gi:76580 gj:56353167 gk:1617 gl:0 gm:0 gn:2135 go:-1

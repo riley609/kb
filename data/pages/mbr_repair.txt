@@ -1,0 +1,27 @@
+===== Fixing a broken or corrupt Windows MBR =====
+
+
+**Links**
+
+[[http://serverfault.com/questions/233592/how-to-fix-windows-2008-r2-bootmgr-is-missing|Serverfault: Fixing BOOTMGR Missing]]
+
+[[http://social.technet.microsoft.com/Forums/en-US/0e6a7b6a-70de-41af-b2c8-5f8f3c86cef7/bootmgr-is-missing-in-windows-server-2008-r2?forum=winservergen|Technet: BOOTMGR Missing]]
+
+Initial condition: will not boot, says "NTLDR IS MISSING". 
+Booting off Win2k8r2 install CD. In recovery window, no windows installations appear.
+
+**1. Boot with Windows CD/DVD into Recovery mode -> COMMAND PROMPT**
+
+**2. Type the following:**
+
+
+  * BCDBoot C:\Windows 
+  * Bootrec /rebuildbcd
+  * x:\sources\recovery\StartRep.exe
+  * bootrec /fixmbr
+  * bootrec /fixboot
+  * bootrec /rebuildbcd
+  * x:\sources\recovery\StartRep.exe
+
+
+----

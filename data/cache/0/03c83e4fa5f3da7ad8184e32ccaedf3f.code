@@ -1,0 +1,73 @@
+  <span class="co0">#!/bin/bash</span>
+&nbsp;
+  <span class="co0">## INIT VARS</span>
+  <span class="re2">REQD</span>=lshw
+  <span class="re2">NAME</span>=<span class="re1">$REQD</span>
+  <span class="re2">NOW</span>=$<span class="br0">&#40;</span><span class="kw2">date</span> +<span class="sy0">%</span>F<span class="st0">&quot; &quot;</span><span class="sy0">%</span>T<span class="br0">&#41;</span>;
+  <span class="re2">HOST</span>=$<span class="br0">&#40;</span><span class="kw2">hostname</span> -f<span class="br0">&#41;</span>;
+&nbsp;
+  <span class="co0">## GET DISTRO</span>
+  fn_distro<span class="br0">&#40;</span><span class="br0">&#41;</span><span class="br0">&#123;</span>
+  <span class="re2">arch</span>=$<span class="br0">&#40;</span><span class="kw2">uname</span> -m<span class="br0">&#41;</span>
+  <span class="re2">kernel</span>=$<span class="br0">&#40;</span><span class="kw2">uname</span> -r<span class="br0">&#41;</span>
+  <span class="kw1">if</span> <span class="br0">&#91;</span> <span class="re5">-f</span> <span class="sy0">/</span>etc<span class="sy0">/</span>lsb-release <span class="br0">&#93;</span>; <span class="kw1">then</span>
+          <span class="re2">os</span>=$<span class="br0">&#40;</span>lsb_release <span class="re5">-s</span> -d<span class="br0">&#41;</span>
+  <span class="kw1">elif</span> <span class="br0">&#91;</span> <span class="re5">-f</span> <span class="sy0">/</span>etc<span class="sy0">/</span>debian_version <span class="br0">&#93;</span>; <span class="kw1">then</span>
+          <span class="re2">os</span>=<span class="st0">&quot;Debian <span class="es4">$(cat /etc/debian_version)</span>&quot;</span>
+  <span class="kw1">elif</span> <span class="br0">&#91;</span> <span class="re5">-f</span> <span class="sy0">/</span>etc<span class="sy0">/</span>redhat-release <span class="br0">&#93;</span>; <span class="kw1">then</span>
+          <span class="re2">os</span>=$<span class="br0">&#40;</span><span class="kw2">cat</span> <span class="sy0">/</span>etc<span class="sy0">/</span>redhat-release<span class="br0">&#41;</span>
+  <span class="kw1">else</span>
+          <span class="re2">os</span>=<span class="st0">&quot;<span class="es4">$(uname -s)</span> <span class="es4">$(uname -r)</span>&quot;</span>
+  <span class="kw1">fi</span>
+  <span class="kw3">echo</span> <span class="re1">$os</span>
+  <span class="br0">&#125;</span>
+&nbsp;
+  <span class="re2">OS</span>=$<span class="br0">&#40;</span>fn_distro<span class="br0">&#41;</span>;
+&nbsp;
+  <span class="kw3">echo</span> <span class="re1">$OS</span>
+  <span class="co0">## Check of REQD is installed &amp; install if needed</span>
+  <span class="re2">OK</span>=N
+  <span class="kw1">if</span> <span class="kw3">echo</span> <span class="re1">$OS</span> <span class="sy0">|</span><span class="kw2">grep</span> <span class="re5">-iwq</span> ubuntu
+  <span class="kw1">then</span>
+   <span class="re2">OK</span>=Y;
+   <span class="sy0">/</span>usr<span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">dpkg</span> <span class="re5">-l</span> <span class="sy0">|</span> <span class="kw2">grep</span> <span class="re5">-iqw</span> <span class="re1">$REQD</span> <span class="sy0">||</span> <span class="kw2">apt-get</span> <span class="re5">-y</span> <span class="kw2">install</span> <span class="re1">$REQD</span>
+   <span class="kw3">echo</span>;
+   <span class="kw1">else</span>
+   <span class="co0">##</span>
+   <span class="kw1">if</span> <span class="kw3">echo</span> <span class="re1">$OS</span> <span class="sy0">|</span><span class="kw2">egrep</span> <span class="re5">-iwq</span> <span class="st_h">'centos|redhat'</span>
+   <span class="kw1">then</span>
+    <span class="re2">OK</span>=Y;
+    <span class="sy0">/</span>bin<span class="sy0">/</span>rpm <span class="re5">-qa</span> <span class="sy0">|</span> <span class="kw2">grep</span> <span class="re5">-qw</span> <span class="re1">$REQD</span> <span class="sy0">||</span> <span class="kw2">yum</span> <span class="re5">-y</span> <span class="kw2">install</span> <span class="re1">$REQD</span>
+    <span class="kw3">echo</span>;
+   <span class="kw1">fi</span>
+  <span class="kw1">fi</span>
+  <span class="co0">##</span>
+  <span class="kw1">if</span> <span class="br0">&#91;</span> <span class="st0">&quot;<span class="es2">$OK</span>&quot;</span> == <span class="st0">&quot;N&quot;</span> <span class="br0">&#93;</span>
+  <span class="kw1">then</span>
+    <span class="kw3">echo</span> <span class="st0">&quot;Unsupported OS: <span class="es2">$OS</span>&quot;</span>
+    <span class="kw3">exit</span> <span class="nu0">1</span>
+  <span class="kw1">fi</span>
+&nbsp;
+  <span class="co0">## GET PATH AND SET VARS</span>
+  <span class="re2">LSHW</span>=$<span class="br0">&#40;</span><span class="kw2">which</span> <span class="re1">$NAME</span><span class="br0">&#41;</span>;
+  <span class="co0">#</span>
+  <span class="re2">SHORT_HTM</span>=<span class="sy0">/</span>var<span class="sy0">/</span>www<span class="sy0">/</span>html<span class="sy0">/</span>saudit.htm
+  <span class="re2">LONG_HTML</span>=<span class="sy0">/</span>var<span class="sy0">/</span>www<span class="sy0">/</span>html<span class="sy0">/</span>faudit.htm
+  <span class="re2">HEAD</span>=<span class="st0">&quot;&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;&lt;h2&gt;AUDIT FOR <span class="es2">$HOST</span> ON <span class="es2">$NOW</span> &lt;br&gt; OS: <span class="es2">$OS</span> &lt;/h2&gt;&lt;hr&gt;&lt;PRE&gt;&quot;</span>
+  <span class="re2">FOOT</span>=<span class="st0">&quot;&lt;/PRE&gt;&lt;hr&gt;&lt;/body&gt;&lt;/html&gt;&quot;</span>
+&nbsp;
+&nbsp;
+  <span class="co0">## DO ABBREVIATED AUDIT</span>
+  <span class="kw3">echo</span> <span class="re1">$HEAD</span>    <span class="sy0">&gt;</span> <span class="re1">$SHORT_HTM</span>
+  <span class="re1">$LSHW</span> <span class="re5">-short</span> <span class="sy0">&gt;&gt;</span> <span class="re1">$SHORT_HTM</span>
+  <span class="kw3">echo</span> <span class="re1">$FOOT</span>   <span class="sy0">&gt;&gt;</span> <span class="re1">$SHORT_HTM</span>
+&nbsp;
+  <span class="co0">## DO LONG VERSION</span>
+  <span class="re1">$LSHW</span> <span class="re5">-html</span>   <span class="sy0">&gt;</span> <span class="re1">$LONG_HTML</span>
+&nbsp;
+  <span class="co0">## ECHO OUTPUTS</span>
+  <span class="kw2">cat</span> <span class="re1">$SHORT_HTM</span>
+  <span class="kw3">echo</span> <span class="st0">&quot;#####<span class="es1">\n</span>&quot;</span>
+  <span class="kw2">cat</span> <span class="re1">$LONG_HTML</span>
+&nbsp;
+  <span class="co0">## DONE</span>

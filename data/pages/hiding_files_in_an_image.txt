@@ -1,0 +1,20 @@
+====== Steghide ======
+
+
+Steghide supports BMP and JPG images. To embed a secret.zip file in a cover.jpg and make a new file for the embedded jpg use
+
+   steghide --embed -ef secret.zip -cf picture.jpg -sf embeddedpicture.jpg
+   
+steghide will prompt for a password, type in one, this will be needed to recover the secret. After this you can view embedded.jpg just like a normal picture, you won't really notice that it is manipulated.
+
+**To recover the secret files run**
+
+  steghide --extract -sf embeddedpicture.jpg
+   
+Type in the password and your secret will be recovered with its original name, secret.zip.
+
+An important thing to know that an image can only contain a certain amount of secret data, since putting a lot of data into the image would need too much manipulations on the image and the image will be no more like the original. To view how much secret data can steghide embed in a certain image, run:
+
+  steghide --info cover.jpg
+  
+For other features of steghide look in man steghide.

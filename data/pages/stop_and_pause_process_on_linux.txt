@@ -1,0 +1,11 @@
+====== Pause and Continue Processes ======
+
+  mike@krusty:~$ pidof ffmpeg
+  22730
+  
+**Stop Process** 
+  mike@krusty:~$ sudo kill -STOP 22730
+  [sudo] password for mike:
+  
+**Continue Process**
+  mike@krusty:~$ sudo kill -CONT 22730

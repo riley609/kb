@@ -1,0 +1,83 @@
+======Making Ethernet Cables - Tricks of the Trade======
+
+{{http://www.groundcontrol.com/galileo/images/Ethernet_Cable3.jpg?nolink&272x174}}
+
+**HOW TO MAKE AN ETHERNET CABLE** \\ Purchasing Ethernet cables can be quite expensive and pre-made lengths are not always the length you need.  Making Ethernet cables is easy with a box of bulk Category 5e Ethernet cable and RJ-45 connectors that are attached to the cut ends of your preferred cable length.
+
+
+{{http://www.groundcontrol.com/galileo/images/bulk_cable.jpg?nolink&222x219}}
+
+
+Bulk Ethernet Cable - Category 5e or CAT5e \\  \\ (You may also use Category 6 or CAT6 cabling which has higher performance specifications and is about 20% more expensive than CAT5e.)
+
+
+{{http://www.groundcontrol.com/galileo/images/bulk_connectors.jpg?nolink&223x168}}
+
+|Bulk RJ45 Crimpable Connectors for CAT-5e \\ or \\ Bulk RJ45 Crimpable Connectors for CAT-6 |
+|{{http://www.groundcontrol.com/galileo/images/crimper.jpg?nolink&378x161  }} \\   \\  
+\\
+=====RJ-45 Crimping tool=====
+
+
+{{http://www.groundcontrol.com/galileo/images/Ethernet_Cable_Straight-Through_568B.gif?nolink&400x250  }}
+There are two kinds of Ethernet cables you can make,  ** Straight Through  ** and  ** Crossover ** . || \\  \\ 
+Ethernet cables are the standard cable used for almost all purposes. It is highly recommend you duplicate the color order as shown on the left. Note how the green pair is not side-by-side as are all the other pairs. This configuration allows for longer wire runs.
+
+
+{{http://www.groundcontrol.com/galileo/images/RJ-45_Crossover_Ethernet_Cable.gif?nolink&400x250  }} \\  \\ CROSSOVER CABLES - The purpose of a Crossover Ethernet cable is to directly connect one computer to another computer (or device) without going through a router, switch or hub.
+
+
+|{{http://www.groundcontrol.com/galileo/images/Ethernet_Cable9.jpg?nolink&341x162}} |
+
+Here's how to make a standard cable: \\  \\ cut into the plastic sheath about **1 inch** (2.5 cm) from the end of the cut cable. The crimping tool has a razor blade that will do the trick with practice.
+
+|
+|{{http://www.groundcontrol.com/galileo/images/Network_Eth_94.jpg?nolink&341x203}} |Unwind and pair the similar colors. |
+|{{http://www.groundcontrol.com/galileo/images/networkz84.jpg?nolink&341x288}} | \\ Pinch the wires between your fingers and straighten them out as shown. The color order is important to get correct.\\  |
+|  {{http://www.groundcontrol.com/galileo/images/bargain_left_handed_scissors_small[1].jpg?nolink&150x191}}  |
+
+Use scissors to make a straight cut across the wires **1/2 Inch** (1.3 cm) from the cut sleeve to the end of the wires.
+
+|
+|  {{http://www.groundcontrol.com/galileo/images/networkb4.jpg?nolink&300x140}}  |
+
+Push the wires into the connector. Note the position of the blue plastic shielding. Also note how the wires go all the way to the end.
+
+|
+|  |  |
+|  {{http://www.groundcontrol.com/galileo/images/networkb5.jpg?nolink&300x151}}  |
+
+A view from the top. All the wires are all the way in. There are no short wires.
+
+|
+|  |  |
+|  {{http://www.groundcontrol.com/galileo/images/networkb6.jpg?nolink&300x125}}  |
+
+- Note how the blue plastic sleeve is not inside the connector where it can be locked into place. The wires are too long. The wires should extend only 1/2 inch from the blue cut sleeve.
+
+|
+|  |  |
+|  {{http://www.groundcontrol.com/galileo/images/networkb7.jpg?nolink&300x140}}  |
+
+ - Note how the cables do not go all the way to the end of the connector.
+
+|
+|  {{http://www.groundcontrol.com/galileo/images/Crimping_Ethernet_Step.jpg?nolink&300x226}}  |
+
+CRIMPING THE CABLE ... carefully place the connector into the Ethernet Crimper and cinch down on the handles tightly. The copper splicing tabs on the connector will pierce into each of the eight wires. There is also a locking tab that holds the blue plastic sleeve in place for a tight compression fit. When you remove the cable from the crimper, that end is ready to use.
+
+|
+|  {{http://www.groundcontrol.com/galileo/images/Ethernet_Repeat_Steps.jpg?nolink&300x185}}  |
+
+For a standard "Straight Through" cable, repeat all steps and wire color order on the other end of cable. For a cross-over cable, the other end will have a different color order as shown by the crossover picture above.
+
+|
+|  {{http://www.groundcontrol.com/galileo/images/Ethernet_Cable_Tester_Simple.jpg?nolink&300x226}}  |
+
+Make sure to test the cables before installing them. An inexpensive Ethernet cable tester does this quite well.
+
+|
+
+NOTE - The maximum cable length of CAT-5, CAT-5e or CAT-6 Ethernet cable is 328 feet or 100 meters.
+
+

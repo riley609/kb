@@ -1,0 +1,115 @@
+====== Create bonded interfaces ======
+
+**Step #1: Create a Bond0 Configuration File**
+
+Red Hat Enterprise Linux (and its clone such as CentOS) stores network configuration in /etc/sysconfig/network-scripts/ directory. First, you need to create a bond0 config file as follows:
+  # vi /etc/sysconfig/network-scripts/ifcfg-bond0
+
+Append the following linest:
+ 
+  DEVICE=bond0
+  IPADDR=192.168.1.20
+  NETWORK=192.168.1.0
+  NETMASK=255.255.255.0
+  USERCTL=no
+  BOOTPROTO=none
+  ONBOOT=yes
+ 
+You need to replace IP address with your actual setup. Save and close the file.
+
+**Step #2: Modify eth0 and eth1 config files**
+
+Open both configuration using a text editor such as vi/vim, and make sure file read as follows for eth0 interface
+  # vi /etc/sysconfig/network-scripts/ifcfg-eth0
+
+Modify/append directive as follows:
+  DEVICE=eth0
+  USERCTL=no
+  ONBOOT=yes
+  MASTER=bond0
+  SLAVE=yes
+  BOOTPROTO=none
+
+Open eth1 configuration file using vi text editor, enter:
+  # vi /etc/sysconfig/network-scripts/ifcfg-eth1
+
+Make sure file read as follows for eth1 interface:
+  DEVICE=eth1
+  USERCTL=no
+  ONBOOT=yes
+  MASTER=bond0
+  SLAVE=yes
+  BOOTPROTO=none
+
+Save and close the file.
+
+**Step # 3: Load bond driver/module**
+
+Make sure bonding module is loaded when the channel-bonding interface (bond0) is brought up. You need to modify kernel modules configuration file:
+  # vi /etc/modprobe.conf
+
+Append following two lines:
+  alias bond0 bonding
+  options bond0 mode=balance-alb miimon=100
+
+Save file and exit to shell prompt. You can learn more about all bounding options by clicking here).
+
+**Step # 4: Test configuration**
+First, load the bonding module, enter:
+  # modprobe bonding
+
+Restart the networking service in order to bring up bond0 interface, enter:
+  # service network restart
+
+Make sure everything is working. Type the following cat command to query the current status of Linux kernel bounding driver, enter:
+  # cat /proc/net/bonding/bond0
+
+//**Sample outputs:**//
+
+  Bonding Mode: load balancing (round-robin)
+  MII Status: up
+  MII Polling Interval (ms): 100
+  Up Delay (ms): 200
+  Down Delay (ms): 200
+  Slave Interface: eth0
+  MII Status: up
+  Link Failure Count: 0
+  Permanent HW addr: 00:0c:29:c6:be:59
+  Slave Interface: eth1
+  MII Status: up
+  Link Failure Count: 0
+  Permanent HW addr: 00:0c:29:c6:be:63
+
+To check all network interfaces, enter:
+  # ifconfig
+
+//**Sample outputs:**//
+
+  bond0     Link encap:Ethernet  HWaddr 00:0C:29:C6:BE:59
+   inet addr:192.168.1.20  Bcast:192.168.1.255  Mask:255.255.255.0
+   inet6 addr: fe80::200:ff:fe00:0/64 Scope:Link
+   UP BROADCAST RUNNING MASTER MULTICAST  MTU:1500  Metric:1
+   RX packets:2804 errors:0 dropped:0 overruns:0 frame:0
+   TX packets:1879 errors:0 dropped:0 overruns:0 carrier:0
+   collisions:0 txqueuelen:0
+  RX bytes:250825 (244.9 KiB)  TX bytes:244683 (238.9 KiB)
+  
+  eth0      Link encap:Ethernet  HWaddr 00:0C:29:C6:BE:59
+  inet addr:192.168.1.20  Bcast:192.168.1.255  Mask:255.255.255.0
+  inet6 addr: fe80::20c:29ff:fec6:be59/64 Scope:Link
+  UP BROADCAST RUNNING SLAVE MULTICAST  MTU:1500  Metric:1
+  RX packets:2809 errors:0 dropped:0 overruns:0 frame:0
+  TX packets:1390 errors:0 dropped:0 overruns:0 carrier:0
+  collisions:0 txqueuelen:1000
+  RX bytes:251161 (245.2 KiB)  TX bytes:180289 (176.0 KiB)
+  Interrupt:11 Base address:0x1400
+  
+  eth1      Link encap:Ethernet  HWaddr 00:0C:29:C6:BE:59
+  inet addr:192.168.1.20  Bcast:192.168.1.255  Mask:255.255.255.0
+  inet6 addr: fe80::20c:29ff:fec6:be59/64 Scope:Link
+  UP BROADCAST RUNNING SLAVE MULTICAST  MTU:1500  Metric:1
+  RX packets:4 errors:0 dropped:0 overruns:0 frame:0
+  TX packets:502 errors:0 dropped:0 overruns:0 carrier:0
+  collisions:0 txqueuelen:1000
+  RX bytes:258 (258.0 b)  TX bytes:66516 (64.9 KiB)
+  Interrupt:10 Base address:0x1480

@@ -1,0 +1,131 @@
+
+<h1 class="sectionedit1" id="expanding_a_lvm_logical_volume">Expanding a LVM logical volume</h1>
+<div class="level1">
+
+<p>
+This tip explains how to expand an existing logical volume by adding a new new physical volume to a volume group through LVM. The e2fsprogs and lvm2 packages are required to follow these steps, but these packages are mandatory on systems that use ext2/ext3 on a LVM2 logical volume.
+</p>
+
+<p>
+<strong>Situation</strong>
+</p>
+
+<p>
+<em>Volume group: MindbenderGroup
+
+Logical volume: MindbenderHome
+
+Physical storage device to add: /dev/sda5 of type “Linux LVM”
+
+Adding a physical device for use by LVM
+
+Add /dev/sda5 as a physical volume that can be used for LVM:</em>
+</p>
+<pre class="code">lvm pvcreate /dev/sda5</pre>
+
+<p>
+Adding the physical volume to the volume group
+</p>
+
+<p>
+Add this physical volume to the volume group “MindbenderGroup”:
+</p>
+<pre class="code">lvm vgextend &quot;MindbenderGroup&quot; /dev/sda5
+Volume group &quot;MindbenderGroup&quot; successfully extended</pre>
+
+<p>
+Determine the size of the extended volume
+</p>
+
+<p>
+Get the site of the expanded volume group first:
+</p>
+<pre class="code">lvm vgdisplay
+--- Volume group ---
+VG Name               MindbenderGroup
+System ID
+Format                lvm2
+Metadata Areas        2
+Metadata Sequence No  4
+VG Access             read/write
+VG Status             resizable
+MAX LV                0
+Cur LV                2
+Open LV               2
+Max PV                0
+Cur PV                2
+Act PV                2
+VG Size               72.59 GB
+PE Size               32.00 MB
+Total PE              2323
+Alloc PE / Size       1129 / 35.28 GB
+Free  PE / Size       1194 / 37.31 GB
+VG UUID               6OXHId-sean-ZBR2-wuOy-yjVR-cQeB-PJIvrD</pre>
+
+<p>
+We can see here that 1129 of 2323 physical extends (PE) are in use. But there are two logical volumes, so we have to look up the size of the volume that we would like to extend:
+</p>
+<pre class="code">lvm lvdisplay /dev/MindbenderGroup/MindbenderHome
+--- Logical volume ---
+LV Name                /dev/MindbenderGroup/MindbenderHome
+VG Name                MindbenderGroup
+LV UUID                RQtp4K-Wca2-uivW-3rVn-GfZE-hYea-KKH5pT
+LV Write Access        read/write
+LV Status              available
+# open                 1
+LV Size                33.34 GB
+Current LE             1067
+Segments               1
+Allocation             inherit
+Read ahead sectors     0
+Block device           253:0</pre>
+
+<p>
+The current size is 1067 PEs, and we have 1194 free extends, so the new volume size will be 1067 + 1194 = 2261.
+</p>
+
+<p>
+Extending the volume
+</p>
+
+<p>
+We can now easily extend the volume, by specifying the new number of PEs:
+</p>
+<pre class="code">lvm lvresize -l 2261 /dev/MindbenderGroup/MindbenderHome
+Extending logical volume MindbenderHome to 70.66 GB
+Logical volume MindbenderHome successfully resized</pre>
+
+<p>
+Resizing the filesystem
+</p>
+
+<p>
+The volume is now expanded, but the filesystem still has its old size. You have 2 solutions to expand the filesytem :
+</p>
+
+<p>
+You can either umount the volume , use resize2fs and then mount it back :
+</p>
+<pre class="code">umount /dev/MindbenderGroup/MindbenderHome
+resize2fs /dev/MindbenderGroup/MindbenderHome
+mount /dev/MindbenderGroup/MindbenderHome</pre>
+
+<p>
+Or you can resize the filesystem without umounting the device (applications can still write/read datas on disk), a.k.a online resizing :
+</p>
+
+<p>
+<strong>CentOS 4</strong>
+</p>
+<pre class="code">ext2online /dev/MindbenderGroup/MindbenderHome</pre>
+
+<p>
+<strong>CentOS 5</strong>
+</p>
+<pre class="code">resize2fs /dev/MindbenderGroup/MindbenderHome</pre>
+
+<p>
+(In CentOS 5 the ext2online command has been removed and the online resizing code has been merged into resize2fs)
+</p>
+
+</div>

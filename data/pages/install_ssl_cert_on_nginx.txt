@@ -1,0 +1,48 @@
+====== Install SSL Certificate Nginx ======
+
+
+Download and copy your certificate files to your server
+-------------------------------------------------------
+
+Download your SSL certificate and support files by clicking on the download link in your fulfillment email or from your GeoCerts SSL Manager account. Unzip the files and copy them into the directory where you will keep your certificates. Some files in the zip may or may not be used depending on your server type.
+
+Concat server cert and intermediate into a single file
+Nginx requires a single file that contains the SSL Server Certificate stacked on top of the GeoTrust intermediate. The SSL Server Certificate (your_domain_com.txt) must be first in the stack. You can accomplish this by running this command:
+
+**//cat GeoTrust_Intermediate.txt >> your_domain_com.txt//**
+
+This will append the intermediate to SSL cert file.
+
+Next change the filename for your_domain_com.txt to your_domain_com.crt.
+
+Update your Nginx Configuration File
+Locate your Nginx configuration file and enter the full path to your concatenated SSL server certificate file and private key.
+
+  worker_processes 1;
+  http {
+  server {
+    listen               443;
+    ssl                  on;
+    ssl_certificate      /usr/local/nginx/conf/your_domain_com.crt;
+    ssl_certificate_key  /usr/local/nginx/conf/cert.key;
+    keepalive_timeout    70;
+     }
+   }
+Since Nginx version 0.7.14 the preferred way of enabling SSL is by using the `ssl` parameter of the `listen` directive:
+
+  server {
+    listen 443 default ssl;
+    ssl_certificate      /usr/local/nginx/conf/your_domain_com.crt;
+    ssl_certificate_key  /usr/local/nginx/conf/cert.key;  
+    }
+    
+Restart
+-------
+After making changes to your config file it is good practice to check the file for syntax errors before attempting to use it. The following command will determin there are errors.
+
+ //sudo nginx -t -c /etc/nginx/nginx.conf//
+
+Restart your Nginx web server:
+------------------------------
+
+ //sudo /etc/init.d/nginx restart//

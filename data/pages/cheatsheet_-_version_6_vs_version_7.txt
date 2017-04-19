@@ -1,0 +1,5 @@
+====== RED HAT ENTERPRISE LINUX 5, 6, AND 7 ======
+
+This is common administrative commands showing the differences.
+
+{{:wiki:rhel_admin_commands_v5_v6_v7_cheatsheet.pdf|}}

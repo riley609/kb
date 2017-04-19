@@ -1,0 +1,21 @@
+====== Email Alert on SSH login ======
+
+
+To secure your machine, there are hundred different things you can do, but the most important thing is to know what’s happening on your Machine. In that getting the alerts as soon as someone login is one of very important and must thing to do.
+
+So, to do the same thing, you can go with two approaches:
+
+Get the alert for some specific users as soon as they login to your machine.
+Get the alert for anyone who successfully logged into your machine.
+This is a small script, which you need to put at specific location to get the alerts in much better/presentable shape. Remember to change the values in the sendmail section.
+
+<code bash Usr_Ssh_login.sh>
+user=`/usr/bin/whoami`
+ip=`/usr/bin/last | head -1 | awk ‘{print $3}’`
+echo “Subject:SSH Login Alert \n\n User \”$user\” just logged into the machine from IP $ip” | sendmail -F “Sender Name” -f <sender id> <receiver id>
+</code>
+
+So, to get the alerts we are going to use the above script
+
+To get alerts when a specific user login to a machine (not all users), just put the script into the User’s home directory. To be specific, just put the script into this file “<User’s home>/.ssh/rc“
+To get the alerts when any user login to the machine, just put the script in ssh config directory. To be specific put the script at “**/etc/ssh/sshrc**” and you will get the alert as soon as any user login to the machine.

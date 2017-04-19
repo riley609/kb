@@ -1,0 +1,160 @@
+====== Install smartmontools on Citrix XenServer ======
+
+**General installation**
+To install smartmontools on a general Linux system (not XenServer), run
+yum install smartmontools
+or
+apt-get install smartmontools
+Installation on Citrix XenServer
+Citrix XenServer 5.5, 5.6 and 6.0 are based on CentOS 5.4, but the smartmontools package is not available in the default Citrix repository, so it can't be installed with yum install smartmontools (as it would be possible with any other CentOS distribution).
+It is probably safest to use the same versions that were in the original CentOS 5.4 distribution. Since that release is no longer the latest, we have to go to an archive server to find the packages. The packages listed below are actually used in other CentOS releases too, so these are probably the latest versions anyway.
+wget http://vault.centos.org/5.4/os/i386/CentOS/mailx-8.1.1-44.2.2.i386.rpm
+
+wget http://vault.centos.org/5.4/os/i386/CentOS/smartmontools-5.38-2.el5.i386.rpm
+
+ rpm -hiv smartmontools-5.38-2.el5.i386.rpm mailx-8.1.1-44.2.2.i386.rpm
+ warning: smartmontools-5.38-2.el5.i386.rpm: Header V3 DSA signature: NOKEY, key ID e8562897
+ Preparing...                ########################################### [100%]
+   1:mailx                  ########################################### [ 50%]
+   2:smartmontools          ########################################### [100%]
+ Checking the disk status
+
+We can now retrieve the disk status using smartctl -d ata -a /dev/sda. The most important fields are : SMART overall-health self-assessment test result - that should always have a value of PASSED. Other important fields are:
+Reallocated_Sector_Ct, which counts the number of bad blocks that have been reallocated. It should be a low number. If this value increases, it is an alarm signal. Make a backup and replace the disk drive.
+Current_Pending_Sector, which is the number of blocks with read errors that are not yet reallocated.
+Offline_Uncorrectable .
+
+Also check out the columns VALUE WORST THRESH. For each attribute, the current value of the field should never be lower than the threshold defined by the manufacturer.
+
+ smartctl -d ata -a /dev/sda
+ smartctl version 5.38 [i686-redhat-linux-gnu] Copyright (C) 2002-8 Bruce Allen
+ Home page is http://smartmontools.sourceforge.net/
+
+  === START OF INFORMATION SECTION ===
+ Device Model:     ST31500341AS
+ Serial Number:    9VS1Y9GE
+ Firmware Version: CC1H
+ User Capacity:    1,500,301,910,016 bytes
+ Device is:        Not in smartctl database [for details use: -P showall]
+ ATA Version is:   8
+ ATA Standard is:  ATA-8-ACS revision 4
+ Local Time is:    Wed Mar  2 22:37:23 2011 CET
+ SMART support is: Available - device has SMART capability.
+ SMART support is: Enabled
+
+=== START OF READ SMART DATA SECTION ===
+SMART overall-health self-assessment test result: PASSED
+
+General SMART Values:
+Offline data collection status:  (0x82) Offline data collection activity
+                                        was completed without error.
+                                        Auto Offline Data Collection: Enabled.
+Self-test execution status:      (   0) The previous self-test routine completed
+                                        without error or no self-test has ever
+                                        been run.
+Total time to complete Offline
+data collection:                 ( 625) seconds.
+Offline data collection
+capabilities:                    (0x7b) SMART execute Offline immediate.
+                                        Auto Offline data collection on/off support.
+                                        Suspend Offline collection upon new
+                                        command.
+                                        Offline surface scan supported.
+                                        Self-test supported.
+                                        Conveyance Self-test supported.
+                                        Selective Self-test supported.
+SMART capabilities:            (0x0003) Saves SMART data before entering
+                                        power-saving mode.
+                                        Supports SMART auto save timer.
+Error logging capability:        (0x01) Error logging supported.
+                                        General Purpose Logging supported.
+Short self-test routine
+recommended polling time:        (   1) minutes.
+Extended self-test routine
+recommended polling time:        ( 255) minutes.
+Conveyance self-test routine
+recommended polling time:        (   2) minutes.
+SCT capabilities:              (0x103f) SCT Status supported.
+                                        SCT Feature Control supported.
+                                        SCT Data Table supported.
+
+SMART Attributes Data Structure revision number: 10
+Vendor Specific SMART Attributes with Thresholds:
+ID# ATTRIBUTE_NAME          FLAG     VALUE WORST THRESH TYPE      UPDATED  WHEN_FAILED RAW_VALUE
+  1 Raw_Read_Error_Rate     0x000f   108   099   006    Pre-fail  Always       -       20188464
+  3 Spin_Up_Time            0x0003   100   100   000    Pre-fail  Always       -       0
+  4 Start_Stop_Count        0x0032   100   100   020    Old_age   Always       -       5
+  5 Reallocated_Sector_Ct   0x0033   100   100   036    Pre-fail  Always       -       2
+  7 Seek_Error_Rate         0x000f   083   060   030    Pre-fail  Always       -       212504152
+  9 Power_On_Hours          0x0032   083   083   000    Old_age   Always       -       14961
+ 10 Spin_Retry_Count        0x0013   100   100   097    Pre-fail  Always       -       0
+ 12 Power_Cycle_Count       0x0032   100   100   020    Old_age   Always       -       5
+184 Unknown_Attribute       0x0032   100   100   099    Old_age   Always       -       0
+187 Reported_Uncorrect      0x0032   100   100   000    Old_age   Always       -       0
+188 Unknown_Attribute       0x0032   100   098   000    Old_age   Always       -       29
+189 High_Fly_Writes         0x003a   001   001   000    Old_age   Always       -       143
+190 Airflow_Temperature_Cel 0x0022   064   050   045    Old_age   Always       -       36 (Lifetime Min/Max 22/47)
+194 Temperature_Celsius     0x0022   036   050   000    Old_age   Always       -       36 (0 19 0 0)
+195 Hardware_ECC_Recovered  0x001a   049   011   000    Old_age   Always       -       20188464
+197 Current_Pending_Sector  0x0012   100   100   000    Old_age   Always       -       0
+198 Offline_Uncorrectable   0x0010   100   100   000    Old_age   Offline      -       0
+199 UDMA_CRC_Error_Count    0x003e   200   200   000    Old_age   Always       -       0
+240 Head_Flying_Hours       0x0000   100   253   000    Old_age   Offline      -       43379169704557
+241 Unknown_Attribute       0x0000   100   253   000    Old_age   Offline      -       3426517151
+242 Unknown_Attribute       0x0000   100   253   000    Old_age   Offline      -       6452474
+
+SMART Error Log Version: 1
+No Errors Logged
+
+SMART Self-test log structure revision number 1
+Num  Test_Description    Status                  Remaining  LifeTime(hours)  LBA_of_first_error
+# 1  Short offline       Completed without error       00%     14961         -
+
+SMART Selective self-test log data structure revision number 1
+ SPAN  MIN_LBA  MAX_LBA  CURRENT_TEST_STATUS
+    1        0        0  Not_testing
+    2        0        0  Not_testing
+    3        0        0  Not_testing
+    4        0        0  Not_testing
+    5        0        0  Not_testing
+Selective self-test flags (0x0):
+  After scanning selected spans, do NOT read-scan remainder of disk.
+If Selective self-test is pending on power-up, resume after 0 minute delay.
+Running tests manually
+To test a drive, issue either a short (smartctl -d ata -t short /dev/sda) or a long (smartctl -d ata -t long /dev/sda) internal self test. These tests are not destructive and can be executed during normal usage. A short test will complete in a couple of minutes, while a long test can run for hours.
+smartctl -d ata -t long /dev/sda
+smartctl version 5.38 [i686-redhat-linux-gnu] Copyright (C) 2002-8 Bruce Allen
+Home page is http://smartmontools.sourceforge.net/
+
+=== START OF OFFLINE IMMEDIATE AND SELF-TEST SECTION ===
+Sending command: "Execute SMART Extended self-test routine immediately in off-line mode".
+Drive command "Execute SMART Extended self-test routine immediately in off-line mode" successful.
+Testing has begun.
+Please wait 255 minutes for test to complete.
+Test will complete after Fri Mar  4 12:45:52 2011
+
+Use smartctl -X to abort test.
+Check the disk status with smartctl -d ata -a /dev/sda after the self-test completes.
+Automatic monitoring of disk drives
+The smartd daemon handles automatic testing for all drives, logs any status changes in /var/log/syslog or /var/log/messages and sends a status email in case of a problem (if mail es enabled, see below). It is configured in the file /etc/smartd.conf.
+The following lines will run a short test every day between 02:00 and 03:00, and a long test on every Saturday between 03:00 and 04:00. If there is a problem, send an email to the configured address. The -M test option will send a test email whenever the smartd daemon is started.
+The DEVICESCAN line would normally cause default test runs for all disks that smartd finds, but does not work on my system for some reason. So it is commented out and the tests will only run for explicitly listed devices.
+/dev/sda -d ata -a -s (S/../.././02|L/../../6/03) -t -m arne@schirmacher.de
+/dev/sdb -d ata -a -s (S/../.././02|L/../../6/03) -t -m arne@schirmacher.de
+
+#DEVICESCAN -H -m root
+After any change to the /etc/smartd.conf file the smartd daemon should be restarted: /etc/init.d/smartd restart
+Enabling email on Citrix XenServer
+Citrix XenServer is not configured to run a mail server. Therefore without further configuration smartd might attempt to send out warning emails in case anything fails, but no mails will actually receive their destination.
+It is fortunately not necessary to install a full-blown email package. XenServer comes with ssmtp preinstalled, which simply forwards emails to a real mail server.
+To enable mail sending on Citrix XenServer, set up /etc/ssmtp/ssmtp.conf. You need to provide a real mail server and the local domain name.
+#
+# /etc/ssmtp.conf -- a config file for sSMTP sendmail.
+#
+root=postmaster
+mailhub=mail.pixsoftware.de
+rewriteDomain=pixsoftware.de
+hostname=server32.pixsoftware.de
+After setting up /etc/ssmtp/ssmtp.conf, send a test email from the console to make sure that the email gets through:
+echo "this is a test mail" | mailx -s "Test mail" arne@schirmacher.de
+If you are using the -M test option to a /etc/smartd.conf device definition, you can also restart the smartd daemon to have it send out test emails.

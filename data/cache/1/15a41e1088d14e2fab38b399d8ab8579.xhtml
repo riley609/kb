@@ -1,0 +1,347 @@
+
+<h1 class="sectionedit1" id="lvm_management">LVM Management</h1>
+<div class="level1">
+
+<p>
+<strong>Please note: These commands are all based on CentOS 6.(they work on Ubuntu 12 Server as well)</strong>
+</p>
+
+</div>
+<!-- EDIT1 SECTION "LVM Management" [1-127] -->
+<h2 class="sectionedit2" id="creating_an_lvm_volume">Creating an LVM Volume</h2>
+<div class="level2">
+
+<p>
+Use parted as it has no 2TB restriction (unlike fdisk/cfdisk) and create a GPT partition. <br/>
+
+Do this for each physical volume you want to add to LVM (use fdisk -l to see the available volumes)
+</p>
+<pre class="code">parted /dev/sdx
+(parted) mklabel gpt</pre>
+<pre class="code">(parted) mkpart primary 0% 100%
+(parted) set 1 lvm on</pre>
+
+<p>
+Use pvcreate to mark volumes for LVM
+</p>
+<pre class="code">pvcreate /dev/sdc1 /dev/sdd1
+Physical volume &quot;/dev/sdc1&quot; successfully created
+Physical volume &quot;/dev/sdd1&quot; successfully created</pre>
+
+<p>
+Use <strong>pvdisplay</strong> or <strong>pvscan</strong> to check
+</p>
+
+</div>
+<!-- EDIT2 SECTION "Creating an LVM Volume" [128-671] -->
+<h2 class="sectionedit3" id="create_the_volume_group">Create the Volume Group</h2>
+<div class="level2">
+
+<p>
+Use vgcreate, vgdisplay Commands
+</p>
+
+<p>
+Volume groups are nothing but a pool of storage that consists of one or more physical volumes. <br/>
+
+Once you create the physical volume, you can create the volume group (VG) from these physical volumes (PV). <br/>
+
+</p>
+<pre class="code">vgcreate vol_grp1 /dev/sdc1 /dev/sdd1
+Volume  group &quot;vol_grp1&quot; successfully created</pre>
+
+<p>
+LVM processes the storage in terms of extents. We can also change the extent size (from the default size 4MB) using -s flag.
+</p>
+
+<p>
+vgdisplay command lists the created volume groups.
+</p>
+<pre class="code">vgdisplay
+--- Volume group ---
+VG Name                      vol_grp1
+System ID
+Format                       lvm2
+Metadata Areas               2
+Metadata Sequence No         1
+VG Access                    read/write
+VG Status                    resizable
+MAX LV                       0
+Cur LV                       0
+Open LV                      0
+Max PV                       0
+Cur PV                       2
+Act PV                       2
+VG Size                      3.72 GB
+PE Size                      4.00 MB
+Total PE                     952
+Alloc PE / Size              0 / 0
+Free  PE / Size              952 / 3.72 GB
+VG UUID                      Kk1ufB-rT15-bSWe-5270-KDfZ-shUX-FUYBvR</pre>
+
+</div>
+<!-- EDIT3 SECTION "Create the Volume Group" [672-1957] -->
+<h2 class="sectionedit4" id="lvm_createcreate_logical_volumes">LVM Create: Create Logical Volumes</h2>
+<div class="level2">
+
+<p>
+Use lvcreate, lvdisplay command
+</p>
+
+<p>
+Now, everything is ready to create the logical volumes from the volume groups. lvcreate command creates the logical volume. <br/>
+
+The -l switch determines the size ie -L100 = 100MB / -l100% = All of disk
+</p>
+<hr />
+
+</div>
+<!-- EDIT4 SECTION "LVM Create: Create Logical Volumes" [1958-2247] -->
+<h2 class="sectionedit5" id="increasing_an_lvm_disk_size">Increasing an LVM Disk Size</h2>
+<div class="level2">
+
+<p>
+Use <em><code>df -h</code></em> to see current mounted partition sizes
+</p>
+<pre class="code">df -h</pre>
+<pre class="code">Filesystem                           Size  Used  Avail Use%  Mounted on
+/dev/mapper/vg_centos63base-lv_root  7.5G  5.3G  1.9G  74%   /
+tmpfs                                1.9G     0  1.9G   0%   /dev/shm
+/dev/xvda1                           485M  121M  339M  27%   /boot</pre>
+
+<p>
+1. After enalrging the disk under VM management, use <code>fdisk</code> to create a new partition of the required expansion size. Change the type of this NEW partition to <code>Linux LVM (8E)</code>. <br/>
+
+You may have to reboot after this if Linux does not see the additional partition.
+</p>
+
+<p>
+2. Use  <em><code>fdisk -l</code></em>  to view and get new partition name, eg:
+</p>
+<pre class="code">fdisk -l</pre>
+<pre class="code">Device     Boot  Start  End     Blocks    Id  System
+/dev/xvda1 *     1      64      512000    83  Linux
+/dev/xvda2       64     1567    12069888  8e  Linux LVM
+/dev/xvda3       1567   5222    29360128  8e  Linux LVM &lt;- New partition xvda3</pre>
+
+<p>
+3. Use the command <em><code>pvdisplay</code></em> to show current physical volumes
+</p>
+<pre class="code">pvdisplay</pre>
+<pre class="code">Physical volume
+PV Name               /dev/xvda2
+VG Name               vg_centos63base
+PV Size               11.51 GiB / not usable 3.00 MiB
+Allocatable           yes (but full)
+PE Size               4.00 MiB
+Total PE              2946
+Free PE               0
+Allocated PE          2946
+PV UUID               sb05Wq-8tJP-K4Pe-RGBn-wE2E-DF77-LeohL4</pre>
+
+<p>
+4. Use the command  <em><code>pvcreate /dev/xvda3</code></em>  to register the physical volume (pv)
+</p>
+<pre class="code">pvcreate /dev/xvda3
+Writing physical volume data to disk &quot;/dev/xvda3&quot;
+Physical volume &quot;/dev/xvda3&quot; successfully created</pre>
+
+<p>
+5. Use the command <em><code>pvdisplay</code></em> to show new physical volumes:
+</p>
+<pre class="code">pvdisplay</pre>
+<pre class="code">Physical volume
+PV Name               /dev/xvda2
+VG Name               vg_centos63base
+PV Size               11.51 GiB / not usable 3.00 MiB
+Allocatable           yes (but full)
+PE Size               4.00 MiB
+Total PE              2946
+Free PE               0
+Allocated PE          2946
+PV UUID               sb05Wq-8tJP-K4Pe-RGBn-wE2E-DF77-LeohL4</pre>
+<pre class="code">Physical volume
+PV Name               /dev/xvda3
+VG Name               vg_centos63base
+PV Size               28.00 GiB / not usable 4.00 MiB
+Allocatable           yes
+PE Size               4.00 MiB
+Total PE              7167
+Free PE               7167
+Allocated PE          0
+PV UUID               HCyrcE-kKgQ-fFEl-dpip-pcAk-cpyx-TppiSC</pre>
+
+<p>
+6. Now use the command <em><code>vgdisplay</code></em> to show the Volume Groups(s) (vg)
+</p>
+<pre class="code">vgdisplay</pre>
+<pre class="code">Volume group
+VG Name               vg_centos63base
+System ID
+Format                lvm2
+Metadata Areas        1
+Metadata Sequence No  3
+VG Access             read/write
+VG Status             resizable
+MAX LV                0
+Cur LV                2
+Open LV               2
+Max PV                0
+Cur PV                1
+Act PV                1
+VG Size               11.51 GiB
+PE Size               4.00 MiB
+Total PE              2946
+Alloc PE / Size       2946 / 11.51 GiB
+Free  PE / Size       0 / 0
+VG UUID               hP42fS-Bsvs-qJCO-MUXu-Z3gK-fxXj-uvhe4j</pre>
+
+<p>
+7. Use the command <em><code>vgextend vg_centos63base /dev/xvda3</code></em> to add the physical volume to the volume group.
+</p>
+<pre class="code">vgextend vg_centos63base /dev/xvda3</pre>
+<pre class="code">Volume group &quot;vg_centos63base&quot; successfully extended</pre>
+
+<p>
+8. Now use the <em><code>vgdisplay</code></em> command to display the NEW volume group size
+</p>
+<pre class="code">vgdisplay</pre>
+<pre class="code">Volume group
+VG Name               vg_centos63base
+System ID
+Format                lvm2
+Metadata Areas        2
+Metadata Sequence No  5
+VG Access             read/write
+VG Status             resizable
+MAX LV                0
+Cur LV                2
+Open LV               2
+Max PV                0
+Cur PV                2
+Act PV                2
+VG Size               39.50 GiB
+PE Size               4.00 MiB
+Total PE              10113
+Alloc PE / Size       10113 / 39.50 GiB
+Free  PE / Size       0 / 0
+VG UUID               hP42fS-Bsvs-qJCO-MUXu-Z3gK-fxXj-uvhe4j</pre>
+
+<p>
+9. Use the <em><code>lvdisplay</code></em> command to view the current logical volumes (lv)
+</p>
+<pre class="code">lvdisplay</pre>
+<pre class="code">Logical volume
+LV Path                /dev/vg_centos63base/lv_root
+LV Name                lv_root
+VG Name                vg_centos63base
+LV UUID                IEvJD0-Qx9l-vbxQ-sZul-hL0G-Dj2J-qjf2nU
+LV Write Access        read/write
+LV Creation host, time centos-63-base, 2012-08-31 07:42:35 +0200
+LV Status              available
+# open                 1
+LV Size                7.59 GiB
+Current LE             1942
+Segments               1
+Allocation             inherit
+Read ahead sectors     auto
+- currently set to     256
+Block device           253:0</pre>
+<pre class="code">Logical volume
+LV Path                /dev/vg_centos63base/lv_swap
+LV Name                lv_swap
+VG Name                vg_centos63base
+LV UUID                tci9a0-r2eE-Rbt0-iSx1-dT7N-scoo-nOo3EV
+LV Write Access        read/write
+LV Creation host, time centos-63-base, 2012-08-31 07:42:38 +0200
+LV Status              available
+# open                 1
+LV Size                3.92 GiB
+Current LE             1004
+Segments               1
+Allocation             inherit
+Read ahead sectors     auto
+- currently set to     256
+Block device           253:1</pre>
+
+<p>
+10. Now use the <em><code>lvextend</code></em> command as follows to expand the chosen lv to use ALL the free space
+</p>
+<pre class="code">lvextend -l +100%FREE /dev/vg_centos63base/lv_root</pre>
+<pre class="code">Extending logical volume lv_root to 35.58 GiB
+Logical volume lv_root successfully resized</pre>
+
+<p>
+11. Use <em><code>lvdisplay</code></em> again to see the effect
+</p>
+<pre class="code">lvdisplay</pre>
+<pre class="code">Logical volume
+LV Path                /dev/vg_centos63base/lv_root
+LV Name                lv_root
+VG Name                vg_centos63base
+LV UUID                IEvJD0-Qx9l-vbxQ-sZul-hL0G-Dj2J-qjf2nU
+LV Write Access        read/write
+LV Creation host, time centos-63-base, 2012-08-31 07:42:35 +0200
+LV Status              available
+# open                 1
+LV Size                35.58 GiB
+Current LE             9109
+Segments               2
+Allocation             inherit
+Read ahead sectors     auto
+- currently set to     256
+Block device           253:0</pre>
+<pre class="code">Logical volume
+LV Path                /dev/vg_centos63base/lv_swap
+LV Name                lv_swap
+VG Name                vg_centos63base
+LV UUID                tci9a0-r2eE-Rbt0-iSx1-dT7N-scoo-nOo3EV
+LV Write Access        read/write
+LV Creation host, time centos-63-base, 2012-08-31 07:42:38 +0200
+LV Status              available
+# open                 1
+LV Size                3.92 GiB
+Current LE             1004
+Segments               1
+Allocation             inherit
+Read ahead sectors     auto
+- currently set to     256
+Block device           253:0</pre>
+<pre class="code">Logical volume
+LV Path                /dev/vg_centos63base/lv_swap
+LV Name                lv_swap
+VG Name                vg_centos63base
+LV UUID                tci9a0-r2eE-Rbt0-iSx1-dT7N-scoo-nOo3EV
+LV Write Access        read/write
+LV Creation host, time centos-63-base, 2012-08-31 07:42:38 +0200
+LV Status              available
+# open                 1
+LV Size                3.92 GiB
+Current LE             1004
+Segments               1
+Allocation             inherit
+Read ahead sectors     auto
+- currently set to     256
+Block device           253:1</pre>
+
+<p>
+12. Use <em><code>fsadm resize /dev/vg_centos63base/lv_root</code></em> to resize the actual filesystem to max freespace
+</p>
+<pre class="code">fsadm resize /dev/vg_centos63base/lv_root</pre>
+<pre class="code">resize2fs 1.41.12 (17-May-2010)
+Filesystem at /dev/mapper/vg_centos63base-lv_root is mounted on /;
+on-line resizing required old desc_blocks = 1, new_desc_blocks = 3
+Performing an on-line resize of /dev/mapper/vg_centos63base-lv_root to 9327616 (4k) blocks.
+The filesystem on /dev/mapper/vg_centos63base-lv_root is now 9327616 blocks long.</pre>
+
+<p>
+13. Use df -h to see the effect
+</p>
+<pre class="code">df -h</pre>
+<pre class="code">Filesystem                           Size  Used  Avail Use%  Mounted on
+/dev/mapper/vg_centos63base-lv_root  36G   5.3G   29G  16%   /
+tmpfs                                1.9G     0  1.9G   0%   /dev/shm
+/dev/xvda1                           485M  121M  339M  27%   /boot</pre>
+
+</div>
+<!-- EDIT5 SECTION "Increasing an LVM Disk Size" [2248-] -->

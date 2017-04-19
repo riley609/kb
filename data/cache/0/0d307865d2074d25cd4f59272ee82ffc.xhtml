@@ -1,0 +1,55 @@
+
+<h1 class="sectionedit1" id="fix_anoying_message_locale_error">Fix anoying message locale error</h1>
+<div class="level1">
+<ol>
+<li class="level1"><div class="li">bash: warning: setlocale: LC_ALL: cannot change locale (de_DE.UTF-8)</div>
+</li>
+</ol>
+
+<p>
+<strong>Rebuilt locales</strong>
+</p>
+<pre class="code">  $ locale-gen</pre>
+
+<p>
+/bin/bash: warning: setlocale: LC_ALL: cannot change locale (de_DE.UTF-8)
+Generating locales…
+</p>
+<pre class="code">en_AG.UTF-8... up-to-date
+en_AU.UTF-8... up-to-date
+en_BW.UTF-8... up-to-date
+en_CA.UTF-8... up-to-date
+en_DK.UTF-8... up-to-date
+en_GB.UTF-8... up-to-date
+en_HK.UTF-8... up-to-date
+en_IE.UTF-8... up-to-date
+en_IN.UTF-8... up-to-date
+en_NG.UTF-8... up-to-date
+en_NZ.UTF-8... up-to-date
+en_PH.UTF-8... up-to-date
+en_SG.UTF-8... up-to-date
+en_US.ISO-8859-1... up-to-date
+en_US.UTF-8... up-to-date
+en_ZA.UTF-8... up-to-date
+en_ZM.UTF-8... cannot open locale definition file `en_ZM&#039;: No such file or directory
+failed
+en_ZW.UTF-8... up-to-date</pre>
+
+<p>
+<strong>Then Run:</strong>
+</p>
+<pre class="code"> export LC_ALL=&quot;de_DE.UTF-8&quot;
+ sudo locale-gen de_DE.UTF-8 
+ </pre>
+
+<p>
+<strong>Alternatively</strong>
+</p>
+<pre class="code">  dpkg-reconfigure locales
+  </pre>
+
+<p>
+Set to <strong>en_ZA.UTF-8</strong>
+</p>
+
+</div>

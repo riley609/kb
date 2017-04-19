@@ -1,0 +1,158 @@
+
+<h1 class="sectionedit1" id="screen_linux_administrator_s_best_friend">Screen – Linux Administrator’s Best Friend</h1>
+<div class="level1">
+
+<p>
+Screen is a utility provided by GNU and usually comes pre-installed in most of the distros. If not, then using the package manager for your respective distros, you can install screen.
+</p>
+
+<p>
+Like for Fedora/centos/redhat:
+</p>
+<pre class="code">$ sudo yum install screen -y</pre>
+
+<p>
+For ubuntu based systems:
+</p>
+<pre class="code">$ sudo apt-get install screen -y</pre>
+
+<p>
+<strong>Info: The key bindings given in this tutorial are all case sensitive, so Ctrl+c is not equal to Ctrl+C</strong>
+</p>
+
+<p>
+<strong>Creating screen sessions:</strong>
+First time you need a start a screen session, which can be done easily by using the command screen.
+</p>
+<pre class="code">$ screen</pre>
+
+<p>
+If you want to give your screen session a name, so that you could identify it later, then you need to create a session like this:
+</p>
+<pre class="code">$ screen -S napster</pre>
+
+<p>
+Once you have created one instance of screen, you can have multiple sessions inside that screen instance, or you can say in other words, multiple tabs.
+</p>
+<pre class="code">To create more session, use “Ctlr+a” followed by “c“.</pre>
+
+<p>
+To check what screen session you are running, use this command:
+</p>
+<pre class="code">$ screen -ls</pre>
+
+<p>
+Output:
+</p>
+<pre class="code"> There is a screen on:
+8762.napster (Detached)
+1 Socket in /var/run/screen/S-napster.
+Detaching and Attaching:
+To detach from an attached screen, use “Ctrl+a” followed by “d“.</pre>
+
+<p>
+Now, from the next time you just need to come and re-attach to your previous screen session like this
+</p>
+<pre class="code">$ screen -d -r napster
+-d = detach from any previous session
+-r = reattach to this session</pre>
+
+<p>
+If there are more than one screen session running, and you haven’t given them names, then use the pid of the screen session to attach to that specific screen.
+</p>
+<pre class="code">$ screen -r pid</pre>
+
+<p>
+If you want to attach to a screen, which is already attached to someone else’s window, and you don’t want others to be disconnected, use “-x” instead of “-r“
+</p>
+<pre class="code">$ screen -x screen_name/pid</pre>
+
+<p>
+By default all the sessions will be with named “bash”, though you can rename them according to your comfort, with “Ctrl+a” followed by “A“.
+</p>
+
+<p>
+When you have more than one session, you can switch between them using these shortcuts:
+</p>
+<pre class="code">“Ctrl+a” followed by “n”  –&gt; next session</pre>
+<pre class="code">“Ctrl+a” followed by “p”  –&gt; previous session</pre>
+
+</div>
+<!-- EDIT1 SECTION "Screen – Linux Administrator’s Best Friend" [1-2223] -->
+<h1 class="sectionedit2" id="gnu_screen_advanced_tutorial">GNU Screen – Advanced Tutorial</h1>
+<div class="level1">
+
+<p>
+ScreenShots:
+Instead of using the <abbr title="Operating System">OS</abbr> utility for taking screenshots, you can use the screen feature to take the snapshot of the current text in the window. Use “Ctrl+a” followed by “h“, will have a text file in your home directory with the name “hardcopy.n“, which will contain all the text from the console.
+</p>
+
+<p>
+Logging:
+The best thing what I like about screen is that you can have logs of anything you have done on screen, which can be used in lot of things in future. To enable logging, use “Ctrl+a” followed by “H“. This will create a file with name “screenlog.0” in your home directory, which will contain anything or everything you have done on the screen. If you want to stop logging, use the same, “Ctrl+a” &amp; “H“.
+</p>
+
+<p>
+You can also enable logging while starting your screen session, which can be done by using “-L” switch:
+</p>
+<pre class="code">$ screen -L -S napster</pre>
+
+<p>
+Split Screen:
+If you are really geeky (or you want to show that you are geeky :) ), then screen split is something you must be using. With that you can have move than one screens in just one display.
+</p>
+
+<p>
+You can split your terminal windows horizontally and vertically (for vertical split, you need to patch your screen).
+</p>
+<pre class="code">To Split the screen horizontally: Ctrl+a &amp; S</pre>
+<pre class="code">To split the screen vertically: Ctrl+a &amp; |</pre>
+<pre class="code">To switch between windows: Ctrl+a &amp; Tab</pre>
+<pre class="code">To kill your current window: Ctrl+a &amp; X</pre>
+
+<p>
+<strong>Sharing:</strong>
+There are scenarios when different people login to a machine with different usernames and you would like to share your screen session with all of them, which normally is not possible as one user can’t attach to a screen of other user. To achieve this, you need to do some tweaking.
+</p>
+
+<p>
+First, setuid root on screen binary.
+</p>
+<pre class="code">$ sudo chmod +s `which screen`</pre>
+
+<p>
+Then create a  screen session:
+</p>
+<pre class="code">$ screen -S napster</pre>
+
+<p>
+Turn multiuser mode “on” in the screen session:
+</p>
+<pre class="code">Ctrl+q then :multiuser on</pre>
+
+<p>
+Then give permission to other users to attach to the screen
+</p>
+<pre class="code">Ctrl+a -&gt; :acladd student</pre>
+
+<p>
+Then ask them to attach to the screen
+</p>
+
+<p>
+$ screen -x username/session
+Sometimes you want others to watch and not to interfere, for that you need to make them read-only.
+</p>
+<pre class="code">Ctrl+a -&gt; :aclchg student -w “#”</pre>
+
+<p>
+This will make student as read-only, and student won’t be able to write anything in the screen.
+</p>
+
+<p>
+To write something on the screen wall so that everyone could look at that:
+</p>
+<pre class="code">Ctrl+a -&gt; :aclchg student -w “#”</pre>
+
+</div>
+<!-- EDIT2 SECTION "GNU Screen – Advanced Tutorial" [2224-] -->

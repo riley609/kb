@@ -1,0 +1,34 @@
+====== SSH LOGIN WITH CONFIG FILE ======
+
+  
+
+On the client run the following commands:
+   
+      $ ssh-keygen -t rsa -C "any comment" (PRESS ENTER UNTIL DONE)
+      $ ssh-copy-id -i .ssh/id_rsa.pub username@server
+
+ 
+On the server run the following commands:
+
+      $ touch $HOME/.ssh/authorized_keys
+      $ cat id_rsa.pub >> $HOME/.ssh/authorized_keys
+      $ chmod 0600 $HOME/.ssh/authorized_keys
+      
+      
+Additionally add a .ssh/config file under your home directory
+      
+   #JumpBox
+        Host jump
+           Hostname 196.14.30.197
+           Port 6502
+           User deon.andrews
+   #Live Nagios Server
+        Host inf-nagios
+          User deon.andrews
+          ProxyCommand ssh -q jump nc %h %p 22                                                                                                                                                                                                                                                           
+   #Live LDAP Server    
+        Host inf-dc-01                                                                                                                                                                                                                                                                 
+          User deon.andrews                                                                                                                                                                                                                                                          
+          ProxyCommand ssh -q jump nc %h %p 22    
+      
+Now SSH without needing to type passwords each time 8-)

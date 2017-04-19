@@ -1,0 +1,11 @@
+**How To Kill Idle sessions:**__Underlined Text__
+  [root@server1:~]# w
+   10:21:55 up 114 days, 8 min,  5 users,  load average: 2.06, 1.51, 1.13
+  USER     TTY      FROM              LOGIN@   IDLE   JCPU   PCPU WHAT
+  root     tty1     -                18Dec14 14days  0.09s  0.09s -bash
+  root     pts/0    192.168.5.123    10:05    0.00s  0.07s  0.01s w
+
+
+**then run this command:**
+
+  skill -KILL -v tty1

@@ -1,0 +1,64 @@
+a:5:{i:0;a:3:{i:0;s:14:"document_start";i:1;a:0:{}i:2;i:0;}i:1;a:3:{i:0;s:6:"p_open";i:1;a:0:{}i:2;i:0;}i:2;a:3:{i:0;s:5:"cdata";i:1;a:1:{i:0;s:4091:"How to Manage Systemd Services on a Linux System
+Systemd is now used by default in most Linux distributions, from Fedora and Red Hat to Ubuntu, Debian, openSUSE, and
+Arch. The systemctl command allows you to get information about systemd’s status and control running services.
+Despite the controversy, this at least introduces some standardization across Linux distributions. The same commands will
+allow you to manage services in the same way on any Linux distribution using systemd.
+Note: To modify your system configuration on Linux distribution like Ubuntu that uses sudo, you’ll need to prefix the
+commands here with sudo. On other Linux distributions, you’ll need to become the root user with the su command first.
+Check If Your Linux System Is Using Systemd
+If you’re not sure whether your Linux distribution is using systemd, open a Terminal window and run the following
+command. This shows you the version number of systemd on your Linux system, if it does have systemd installed:
+systemd –version
+Analyze the Boot Process
+The systemd-analyze command allows you to view information about your boot process, such as how long it took and
+which services (and other processes) added the most time to the boot process.
+To view information about the startup process in general, run this command:
+systemd-analyze
+To view how long each process took to start, run this command:
+systemd-analyze blame
+View Units
+Systemd uses “units,” which can be services (.service), mount points (.mount), devices (.device), or sockets (.socket). The
+same systemctl command manages all these types of units.
+To view all available unit files on your system:
+systemctl list-unit-files
+To list all running units:
+systemctl list-units
+To list all failed units:
+systemctl –failed
+Manage Services
+To view a list of enabled and disabled services, you use the same systemctl command as above, but tell it to only list
+services:
+systemctl list-unit-files –type=service
+The systemctl command allows you to start, stop, or restart a service. You can also tell a service to “reload” its
+configuration.
+The status command is the only action here that will print and output to the terminal. The other commands will silently
+take effect.
+systemctl start name.service
+systemctl stop name.service
+systemctl restart name.service
+systemctl reload name.service
+systemctl status name.service
+Use the systemctl enable command to have systemd automatically start a service (or other type of unit) at bootup. The
+systemctl disable command disables a services and stops it from starting automatically with your computer.
+systemctl enable name.service
+systemctl disable name.service
+You can “mask” a service or other unit to prevent it from starting up at all. You’ll need to unmask it before it can start in the
+future:
+systemctl mask name.service
+systemctl unmask name.service
+Chris Hoffman is a technology writer and all-around computer geek. He's as at
+home using the Linux terminal as he is digging into the Windows registry.
+Connect with him on Google+.
+Published 05/11/15
+There’s a lot more to systemd and its various commands than this, of course. Systemd offers a variety or powermanagement
+commands to shut down, reboot, hibernate, and otherwise control the system’s power state. You can write
+your own unit files to create services and mount points or edit the existing unit files.
+Systemd also offers “targets,” which are similar to runlevels, but different. instead of a number, targets have names — it’s
+possible for systemd to be in multiple target states at once. Systemd also offers its own system journal, which can be
+accessed with the journalctl command. By default, it stores system logs in binary format — but you can switch to plain-text
+format logs, if you prefer.
+The Arch Linux wiki has more in-depth information on systemd, and most of the information there applies to systemd on
+all Linux distributions. You should also check your your own Linux distribution’s systemd documentation for more
+information.
+Image Credit: Bert Heymans on Flickr
+JOIN THE DISCUSSION";}i:2;i:1;}i:3;a:3:{i:0;s:7:"p_close";i:1;a:0:{}i:2;i:1;}i:4;a:3:{i:0;s:12:"document_end";i:1;a:0:{}i:2;i:1;}}

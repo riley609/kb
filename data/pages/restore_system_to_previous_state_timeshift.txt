@@ -1,0 +1,13 @@
+====== TimeShift - Ubuntu System Restore and Backup ======
+
+Add repository:
+
+  sudo apt-add-repository -y ppa:teejee2008/ppa
+
+Update Repository:
+
+  sudo apt-get update
+
+Install Timeshift:
+
+  sudo apt-get install timeshift

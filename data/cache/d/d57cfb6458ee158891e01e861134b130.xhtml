@@ -1,0 +1,505 @@
+
+<h1 class="sectionedit1" id="rsync_script_for_remote_backup">Rsync Script for remote backup</h1>
+<div class="level1">
+<dl class="code">
+<dt><a href="/kb/doku.php?do=export_code&amp;id=script_for_remote_backup_-_rsync&amp;codeblock=0" title="Download Snippet" class="mediafile mf_sh">rsync-remote.sh</a></dt>
+<dd><pre class="code bash"><span class="co0">#!/bin/bash</span>
+<span class="co0">############################################################################</span>
+<span class="co0">#</span>
+<span class="co0"># mirror Version 3.28 By Stu Sheldon stu@actusa.net</span>
+<span class="co0"># </span>
+<span class="co0"># I wish I could take the credit for coming up with this idea, but I got the</span>
+<span class="co0"># entire concept for this from Mike Rubel @ Caltech. Thank you Mike, Great</span>
+<span class="co0"># idea! And thanks for presenting this to our local LUG!</span>
+<span class="co0">#</span>
+<span class="co0"># ============================== Disclaimer ===============================</span>
+<span class="co0">#</span>
+<span class="co0"># Don't even begin to think there is any kind of warranty on this script!</span>
+<span class="co0"># If it destroys your box, it's not my problem. If your dog is standing next</span>
+<span class="co0"># to your PC when it self destructs and get's his tail blown to the next</span>
+<span class="co0"># room, don't come to me!</span>
+<span class="co0">#</span>
+<span class="co0"># =========================================================================</span>
+<span class="co0">#</span>
+<span class="co0"># This script is more or less a quickie that I popped out to allow me to</span>
+<span class="co0"># take snapshots of certain data on development equipment and store it to</span>
+<span class="co0"># a central system. It works for me... If you can use it then have at it!</span>
+<span class="co0">#</span>
+<span class="co0"># What it does:</span>
+<span class="co0">#</span>
+<span class="co0"># mirror does an rsync in the directories listed in the 'allsrcs' variable</span>
+<span class="co0"># and then creates hard links to those files in a directory hierarchy to keep</span>
+<span class="co0"># snapshots of the rsync's at given intervals. In simple terms, it allows you</span>
+<span class="co0"># to store snapshots of the directories you want to backup. Since it uses hard</span>
+<span class="co0"># links for previous data, it is very easy on disk space.</span>
+<span class="co0">#</span>
+<span class="co0"># What is &quot;EXPERIMENTAL&quot; in this script:</span>
+<span class="co0">#</span>
+<span class="co0"># If you read down through the settings, you will see a couple of settings that</span>
+<span class="co0"># are listed as experimental:</span>
+<span class="co0"># autosrcdir=</span>
+<span class="co0"># advexcludes=</span>
+<span class="co0"># Please read the instructions regarding these, and report any problems you</span>
+<span class="co0"># might have with them. They seem to work properly for me, but they have very</span>
+<span class="co0"># limited testing under their belt.</span>
+<span class="co0">#</span>
+<span class="co0"># Instructions:</span>
+<span class="co0"># </span>
+<span class="co0"># The first thing you need to do is go down to the end of this header section</span>
+<span class="co0"># and set all the user defined variables in the user settings section.</span>
+<span class="co0"># They have a brief description of what they do and how they should be set.</span>
+<span class="co0">#</span>
+<span class="co0"># There are two areas at the bottom of configuration section that allow you to</span>
+<span class="co0"># do pre and post executions of commands. The only reason I can see to use</span>
+<span class="co0"># these areas would be if you are trying to rsync a windows box and need to</span>
+<span class="co0"># mount smb shares on the system you are running the script on. If that's your</span>
+<span class="co0"># goal, then add your commands for mounting and unmounting those filesystems</span>
+<span class="co0"># there.</span>
+<span class="co0">#</span>
+<span class="co0"># Once that is done, you can run the program.</span>
+<span class="co0">#</span>
+<span class="co0"># mirror supports one command line switches ( -s ).</span>
+<span class="co0">#	-s = run sync mode only</span>
+<span class="co0">#</span>
+<span class="co0"># Sync mode should be ran the first time you setup mirror. Otherwise, use </span>
+<span class="co0"># no switch.</span>
+<span class="co0"># Once you have run mirror for the first time, you will find that it has setup</span>
+<span class="co0"># a directory hierarchy in your backup root directory:</span>
+<span class="co0">#</span>
+<span class="co0">#	/&lt;backuproot&gt;/&lt;hostid&gt;         ( host root )</span>
+<span class="co0">#	/&lt;backuproot&gt;/&lt;hostid&gt;/working ( working directory )</span>
+<span class="co0">#	/&lt;backuproot&gt;/&lt;hostid&gt;/hourly  ( hourly saves )</span>
+<span class="co0">#	/&lt;backuproot&gt;/&lt;hostid&gt;/daily   ( daily saves )</span>
+<span class="co0">#	/&lt;backuproot&gt;/&lt;hostid&gt;/weekly  ( weekly saves )</span>
+<span class="co0">#</span>
+<span class="co0"># The directories are named 'image-&lt;year&gt;-&lt;month&gt;-&lt;day&gt;-&lt;hour&gt;'</span>
+<span class="co0">#</span>
+<span class="co0"># Each time mirror runs, it date stamps a file in the &lt;hostid&gt; directory called</span>
+<span class="co0"># 'lastrun.time'. This file's date when listing it using ls -laF shows the last</span>
+<span class="co0"># date and time mirror ran on that host.</span>
+<span class="co0">#</span>
+<span class="co0"># The last thing you need to do is add mirror in your crontab with the proper</span>
+<span class="co0"># times and switches.</span>
+<span class="co0">#</span>
+<span class="co0"># If you are going for hourly sync's, add the following to your crontab:</span>
+<span class="co0"># 0 * * * *    /usr/local/sbin/mirror</span>
+<span class="co0">#</span>
+<span class="co0"># Every four hours would be:</span>
+<span class="co0"># 0 0,4,8,12,16,20  * * *    /usr/local/sbin/mirror</span>
+<span class="co0">#</span>
+<span class="co0"># Every six hours:</span>
+<span class="co0"># 0 0,6,12,18 * * *    /usr/local/sbin/mirror</span>
+<span class="co0">#</span>
+<span class="co0"># You get the picture.</span>
+<span class="co0">#</span>
+<span class="co0"># And that's it! Enjoy...</span>
+<span class="co0">#</span>
+<span class="co0">############################################################################</span>
+&nbsp;
+<span class="co0"># Start User Config Stuff</span>
+&nbsp;
+<span class="co0"># Am I saving files from my local system to a remote backup server?</span>
+<span class="co0"># If so, set rmt to 1</span>
+&nbsp;
+<span class="re2">rmt</span>=<span class="nu0">0</span>
+&nbsp;
+<span class="co0"># If rmt &gt; 0 what is the login?</span>
+&nbsp;
+<span class="re2">rmtlogin</span>=<span class="st0">&quot;&quot;</span>
+<span class="re2">rmthost</span>=<span class="st0">&quot;&quot;</span>
+&nbsp;
+<span class="co0"># This is an array of the directories you want to mirror.</span>
+<span class="co0"># Don't forget to split them with white space and enclose them in '&quot;' quotes.</span>
+&nbsp;
+<span class="re2">allsrcdir</span>=<span class="st0">&quot;
+/home
+&quot;</span>
+&nbsp;
+<span class="co0"># The autosrcdir is a bit experimental. If this is set to -gt 0, the script</span>
+<span class="co0"># will make a half hearted effort to create a list of all directories in the</span>
+<span class="co0"># root of the system to be backed up. Turns out that if you want to use the</span>
+<span class="co0"># --delete and or --delete-excluded switches, you can not use '/' as a source.</span>
+&nbsp;
+<span class="re2">autosrcdir</span>=<span class="nu0">0</span>
+&nbsp;
+<span class="co0"># You need to set the backedhost and host ID. The backedhost should be the FQDN</span>
+<span class="co0"># name or IP address you will be backing up, it is ignored if you have set rmt</span>
+<span class="co0"># to 1. The host ID is the name of the directory just above the root of the</span>
+<span class="co0"># backup root directory, the host name might be a good choice here.</span>
+<span class="co0"># if you are backing up locally, or have set rmt to 1, just leave backedhost</span>
+<span class="co0"># blank. Never leave hostid blank.</span>
+&nbsp;
+<span class="re2">backedhost</span>=<span class="st0">&quot;&quot;</span>
+<span class="re2">hostid</span>=<span class="st0">&quot;homer&quot;</span>
+&nbsp;
+<span class="co0"># This is new and experimental. It's designed to allow for more &quot;exact&quot;</span>
+<span class="co0"># filtering of source files. These are files we would usually consider to be</span>
+<span class="co0"># useless during a restore. If you don't like this, or want to disable it,</span>
+<span class="co0"># just change the advexclude flag to 0.</span>
+&nbsp;
+<span class="re2">advexcludes</span>=<span class="nu0">1</span>
+&nbsp;
+<span class="re2">excludesfile</span>=<span class="st0">&quot;/tmp/excludes-<span class="es3">${hostid}</span>&quot;</span>
+&nbsp;
+<span class="kw2">cat</span> <span class="sy0">&gt;</span> <span class="co1">${excludesfile}</span> <span class="co2">&lt;&lt; EOF
+## Settings for udevd
+- /dev/.static/dev/pts/*
+- /dev/.static/dev/shm/*
++ /dev/.static/***
+- /dev/*
+&nbsp;
+## Settings for Static Dev
+#- /dev/pts/*
+#- /dev/shm/*
+&nbsp;
+- /proc/*
+- /sys/*
+- /mnt/*
+- /cdrom/*
+- /media/*
++ *
+EOF</span>
+&nbsp;
+<span class="re2">EXCLUDES</span>=<span class="st0">&quot;--filter=. <span class="es3">${excludesfile}</span>&quot;</span>
+&nbsp;
+<span class="co0"># This is the local root of the backup directories. (where to backup to)</span>
+&nbsp;
+<span class="re2">backuproot</span>=<span class="sy0">/</span>home<span class="sy0">/</span>backroot
+&nbsp;
+<span class="co0"># How far back do you want to go? The default settings are for:</span>
+<span class="co0"># save last 4 hour snaps</span>
+<span class="co0"># save last 7 day snaps</span>
+<span class="co0"># save last 1 week snaps</span>
+<span class="co0"># If you want to save week snapshots, you must at least have savedays set to</span>
+<span class="co0"># 7, if not, the program will force savedays to 7. Weeks are considered to be</span>
+<span class="co0"># Sunday morning snapshots. So make sure you run the script on all 7 days. </span>
+<span class="co0"># You also need to set the newday hour to 00-23 depending on what hour you run</span>
+<span class="co0"># the script in cron.</span>
+&nbsp;
+<span class="re2">newday</span>=00
+<span class="re2">saveweeks</span>=<span class="nu0">1</span>
+<span class="re2">savedays</span>=<span class="nu0">7</span>
+<span class="re2">savehours</span>=<span class="nu0">4</span>
+&nbsp;
+<span class="co0"># Mount and Dismount commands for all reasons are in the following functions</span>
+&nbsp;
+mounting <span class="br0">&#40;</span><span class="br0">&#41;</span>
+<span class="br0">&#123;</span>
+<span class="re2">precom</span>=<span class="nu0">0</span>
+<span class="co0"># ssh ${backedhost} &quot;dpkg --get-selections &gt; /etc/current.packages&quot;</span>
+<span class="co0"># ssh ${backedhost} &quot;apt-get clean&quot;</span>
+<span class="co0"># ssh ${backedhost} &quot;yum clean all&quot;</span>
+<span class="co0"># dpkg --get-selections &gt; /etc/current.packages</span>
+<span class="co0"># apt-get clean</span>
+<span class="co0"># mount -t smbfs -o ro,username=backup,password=letmein \</span>
+<span class="co0"># 	//peanuts/data /nt-fs/pea-cdr \</span>
+<span class="co0">#	|| mountfail</span>
+<span class="br0">&#125;</span>
+&nbsp;
+umounting <span class="br0">&#40;</span><span class="br0">&#41;</span>
+<span class="br0">&#123;</span>
+<span class="re2">postcom</span>=<span class="nu0">0</span>
+<span class="co0"># umount /nt-fs/pea-cdr \</span>
+<span class="co0">#	|| umountfail</span>
+<span class="br0">&#125;</span>
+&nbsp;
+<span class="co0"># Uncomment the rsync command that best suits your needs. Select only one.</span>
+&nbsp;
+<span class="co0"># Typical Unix using ssh and public keys and no logging</span>
+<span class="re2">rsync</span>=<span class="st0">&quot;rsync -aR -q  --numeric-ids --delete --delete-excluded&quot;</span>
+&nbsp;
+<span class="co0"># Typical Unix using ssh and public keys and with logging</span>
+<span class="co0">#rsync=&quot;rsync -aR -v  --numeric-ids --delete --delete-excluded&quot;</span>
+&nbsp;
+<span class="co0"># This has settings for windows and expects to use a mounted share.</span>
+<span class="co0"># rsync=&quot;rsync -a -R -q --delete --modify-window=10&quot;</span>
+&nbsp;
+<span class="co0"># End User Config Stuff</span>
+&nbsp;
+<span class="co0">############################################################################</span>
+&nbsp;
+<span class="co0"># Start Static Code</span>
+&nbsp;
+<span class="kw3">unalias</span> <span class="re5">-a</span>
+<span class="re2">cmdline</span>=<span class="re4">$1</span>
+<span class="re2">cp</span>=<span class="st0">&quot;cp -alf&quot;</span>
+<span class="re2">weekdir</span>=<span class="co1">${backuproot}</span><span class="sy0">/</span><span class="co1">${hostid}</span><span class="sy0">/</span>weekly
+<span class="re2">daydir</span>=<span class="co1">${backuproot}</span><span class="sy0">/</span><span class="co1">${hostid}</span><span class="sy0">/</span>daily
+<span class="re2">hourdir</span>=<span class="co1">${backuproot}</span><span class="sy0">/</span><span class="co1">${hostid}</span><span class="sy0">/</span>hourly
+<span class="re2">working</span>=<span class="co1">${backuproot}</span><span class="sy0">/</span><span class="co1">${hostid}</span><span class="sy0">/</span>working
+<span class="re2">lockfile</span>=<span class="co1">${backuproot}</span><span class="sy0">/</span><span class="co1">${hostid}</span><span class="sy0">/</span>syncing-now
+<span class="re2">logfile</span>=<span class="co1">${backuproot}</span><span class="sy0">/</span><span class="co1">${hostid}</span><span class="sy0">/</span>lastlog
+&nbsp;
+<span class="re2">PATH</span>=<span class="sy0">/</span>usr<span class="sy0">/</span>local<span class="sy0">/</span>bin:<span class="sy0">/</span>usr<span class="sy0">/</span>local<span class="sy0">/</span>sbin:<span class="sy0">/</span>usr<span class="sy0">/</span>bin:<span class="sy0">/</span>usr<span class="sy0">/</span>sbin:<span class="sy0">/</span>bin:<span class="sy0">/</span>sbin
+<span class="re2">datedir</span>=<span class="sy0">`</span><span class="kw2">date</span> +<span class="st_h">'image-%Y-%m-%d-%H'</span><span class="sy0">`</span>
+<span class="re2">dow</span>=<span class="sy0">`</span><span class="kw2">date</span> +<span class="st_h">'%w'</span><span class="sy0">`</span>
+<span class="re2">chour</span>=<span class="sy0">`</span><span class="kw2">date</span> +<span class="st_h">'%H'</span><span class="sy0">`</span>
+<span class="re2">lday</span>=<span class="sy0">`</span><span class="kw2">date</span> +<span class="st_h">'image-%Y-%m-%d-%H'</span> <span class="re5">-d</span> <span class="st_h">'1 day ago'</span><span class="sy0">`</span>
+<span class="re2">lweek</span>=<span class="sy0">`</span><span class="kw2">date</span> +<span class="st_h">'image-%Y-%m-%d-%H'</span> <span class="re5">-d</span> <span class="st_h">'1 week ago'</span><span class="sy0">`</span>
+&nbsp;
+dodir <span class="br0">&#40;</span><span class="br0">&#41;</span>
+<span class="br0">&#123;</span>
+<span class="br0">&#91;</span> <span class="re5">-d</span> <span class="co1">${weekdir}</span> <span class="br0">&#93;</span> <span class="sy0">||</span> <span class="kw2">mkdir</span> <span class="re5">-p</span> <span class="co1">${weekdir}</span>
+<span class="br0">&#91;</span> <span class="re5">-d</span> <span class="co1">${daydir}</span> <span class="br0">&#93;</span> <span class="sy0">||</span> <span class="kw2">mkdir</span> <span class="re5">-p</span> <span class="co1">${daydir}</span>
+<span class="br0">&#91;</span> <span class="re5">-d</span> <span class="co1">${hourdir}</span> <span class="br0">&#93;</span> <span class="sy0">||</span> <span class="kw2">mkdir</span> <span class="re5">-p</span> <span class="co1">${hourdir}</span>
+<span class="br0">&#91;</span> <span class="re5">-d</span> <span class="co1">${working}</span> <span class="br0">&#93;</span> <span class="sy0">||</span> <span class="kw2">mkdir</span> <span class="re5">-p</span> <span class="co1">${working}</span>
+<span class="br0">&#125;</span>
+&nbsp;
+rmtdodir <span class="br0">&#40;</span><span class="br0">&#41;</span>
+<span class="br0">&#123;</span>
+<span class="kw2">ssh</span> <span class="re5">-l</span> <span class="co1">${rmtlogin}</span> <span class="co1">${rmthost}</span> <span class="st0">&quot;[ -d <span class="es3">${weekdir}</span> ] || mkdir -p <span class="es3">${weekdir}</span>&quot;</span>
+<span class="kw2">ssh</span> <span class="re5">-l</span> <span class="co1">${rmtlogin}</span> <span class="co1">${rmthost}</span> <span class="st0">&quot;[ -d <span class="es3">${daydir}</span> ] || mkdir -p <span class="es3">${daydir}</span>&quot;</span>
+<span class="kw2">ssh</span> <span class="re5">-l</span> <span class="co1">${rmtlogin}</span> <span class="co1">${rmthost}</span> <span class="st0">&quot;[ -d <span class="es3">${hourdir}</span> ] || mkdir -p <span class="es3">${hourdir}</span>&quot;</span>
+<span class="kw2">ssh</span> <span class="re5">-l</span> <span class="co1">${rmtlogin}</span> <span class="co1">${rmthost}</span> <span class="st0">&quot;[ -d <span class="es3">${working}</span> ] || mkdir -p <span class="es3">${working}</span>&quot;</span>
+<span class="br0">&#125;</span>
+&nbsp;
+doweek <span class="br0">&#40;</span><span class="br0">&#41;</span>
+<span class="br0">&#123;</span>
+<span class="br0">&#91;</span> <span class="co1">${saveweeks}</span> <span class="re5">-eq</span> <span class="nu0">0</span> <span class="br0">&#93;</span> <span class="sy0">&amp;&amp;</span> <span class="kw3">return</span>
+<span class="kw1">if</span> <span class="br0">&#91;</span> <span class="re5">-d</span> <span class="co1">${daydir}</span><span class="sy0">/</span><span class="co1">${lweek}</span> <span class="br0">&#93;</span>; <span class="kw1">then</span>
+  <span class="kw2">mv</span> <span class="co1">${daydir}</span><span class="sy0">/</span><span class="co1">${lweek}</span> <span class="co1">${weekdir}</span>
+<span class="kw1">else</span>
+  <span class="kw3">echo</span> <span class="st0">&quot;I can't find a daily snapshot that is a week old...&quot;</span>
+<span class="kw1">fi</span>
+<span class="br0">&#125;</span>
+&nbsp;
+rmtdoweek <span class="br0">&#40;</span><span class="br0">&#41;</span>
+<span class="br0">&#123;</span>
+<span class="br0">&#91;</span> <span class="co1">${saveweeks}</span> <span class="re5">-eq</span> <span class="nu0">0</span> <span class="br0">&#93;</span> <span class="sy0">&amp;&amp;</span> <span class="kw3">return</span>
+<span class="kw2">ssh</span> <span class="re5">-l</span> <span class="co1">${rmtlogin}</span> <span class="co1">${rmthost}</span> <span class="st0">&quot;if [ -d <span class="es3">${daydir}</span>/<span class="es3">${lweek}</span> ]; then
+  mv <span class="es3">${daydir}</span>/<span class="es3">${lweek}</span> <span class="es3">${weekdir}</span>
+else
+  echo <span class="es1">\&quot;</span>I can't find a daily snapshot that is a week old...<span class="es1">\&quot;</span>
+fi&quot;</span>
+<span class="br0">&#125;</span>
+&nbsp;
+doday <span class="br0">&#40;</span><span class="br0">&#41;</span>
+<span class="br0">&#123;</span>
+<span class="br0">&#91;</span> <span class="co1">${savedays}</span> <span class="re5">-eq</span> <span class="nu0">0</span> <span class="br0">&#93;</span> <span class="sy0">&amp;&amp;</span> <span class="kw3">return</span>
+<span class="kw1">if</span> <span class="br0">&#91;</span> <span class="re5">-d</span> <span class="co1">${hourdir}</span><span class="sy0">/</span><span class="co1">${lday}</span> <span class="br0">&#93;</span>; <span class="kw1">then</span>
+  <span class="kw2">mv</span> <span class="co1">${hourdir}</span><span class="sy0">/</span><span class="co1">${lday}</span> <span class="co1">${daydir}</span>
+<span class="kw1">else</span>
+  <span class="kw3">echo</span> <span class="st0">&quot;I can't find a hourly snapshot that is 24hrs old...&quot;</span>
+<span class="kw1">fi</span>
+<span class="br0">&#125;</span>
+&nbsp;
+rmtdoday <span class="br0">&#40;</span><span class="br0">&#41;</span>
+<span class="br0">&#123;</span>
+<span class="br0">&#91;</span> <span class="co1">${savedays}</span> <span class="re5">-eq</span> <span class="nu0">0</span> <span class="br0">&#93;</span> <span class="sy0">&amp;&amp;</span> <span class="kw3">return</span>
+<span class="kw2">ssh</span> <span class="re5">-l</span> <span class="co1">${rmtlogin}</span> <span class="co1">${rmthost}</span> <span class="st0">&quot;if [ -d <span class="es3">${hourdir}</span>/<span class="es3">${lday}</span> ]; then
+  mv <span class="es3">${hourdir}</span>/<span class="es3">${lday}</span> <span class="es3">${daydir}</span>
+else
+  echo <span class="es1">\&quot;</span>I can't find a hourly snapshot that is 24hrs old...<span class="es1">\&quot;</span>
+fi&quot;</span>
+<span class="br0">&#125;</span>
+&nbsp;
+dohour <span class="br0">&#40;</span><span class="br0">&#41;</span>
+<span class="br0">&#123;</span>
+<span class="co1">${cp}</span> <span class="co1">${working}</span> <span class="co1">${hourdir}</span><span class="sy0">/</span><span class="co1">${datedir}</span>
+<span class="kw2">touch</span> <span class="co1">${hourdir}</span><span class="sy0">/</span><span class="co1">${datedir}</span>
+<span class="br0">&#125;</span>
+&nbsp;
+rmtdohour <span class="br0">&#40;</span><span class="br0">&#41;</span>
+<span class="br0">&#123;</span>
+<span class="kw2">ssh</span> <span class="re5">-l</span> <span class="co1">${rmtlogin}</span> <span class="co1">${rmthost}</span> <span class="st0">&quot;<span class="es3">${cp}</span> <span class="es3">${working}</span> <span class="es3">${hourdir}</span>/<span class="es3">${datedir}</span>&quot;</span>
+<span class="kw2">ssh</span> <span class="re5">-l</span> <span class="co1">${rmtlogin}</span> <span class="co1">${rmthost}</span> <span class="st0">&quot;touch <span class="es3">${hourdir}</span>/<span class="es3">${datedir}</span>&quot;</span>
+<span class="br0">&#125;</span>
+&nbsp;
+dosync <span class="br0">&#40;</span><span class="br0">&#41;</span>
+<span class="br0">&#123;</span>
+<span class="kw1">if</span> <span class="br0">&#91;</span> <span class="co1">${autosrcdir}</span> <span class="re5">-gt</span> <span class="nu0">0</span> <span class="br0">&#93;</span>; <span class="kw1">then</span>
+ <span class="kw1">if</span> <span class="br0">&#91;</span> <span class="st0">&quot;<span class="es3">${backedhost}</span>&quot;</span> <span class="sy0">!</span>= <span class="st0">&quot;&quot;</span> <span class="br0">&#93;</span>; <span class="kw1">then</span>
+    <span class="re2">allsrcdir</span>=<span class="sy0">`</span><span class="kw2">ssh</span> <span class="co1">${backedhost}</span> <span class="st0">&quot;ls -d /*&quot;</span><span class="sy0">`</span>
+  <span class="kw1">else</span>
+    <span class="re2">allsrcdir</span>=<span class="sy0">`</span><span class="kw2">ls</span> <span class="re5">-d</span> <span class="sy0">/*`</span>
+  <span class="kw1">fi</span>
+<span class="kw1">fi</span>
+<span class="kw1">for</span> srcdir <span class="kw1">in</span> <span class="co1">${allsrcdir}</span>; <span class="kw1">do</span>
+  <span class="kw1">if</span> <span class="br0">&#91;</span> <span class="st0">&quot;<span class="es3">${backedhost}</span>&quot;</span> <span class="sy0">!</span>= <span class="st0">&quot;&quot;</span> <span class="br0">&#93;</span>; <span class="kw1">then</span>
+    <span class="kw1">if</span> <span class="br0">&#91;</span> <span class="co1">${advexcludes}</span> <span class="re5">-gt</span> <span class="nu0">0</span> <span class="br0">&#93;</span>; <span class="kw1">then</span>
+      <span class="co1">${rsync}</span> <span class="st0">&quot;<span class="es3">${EXCLUDES}</span>&quot;</span> <span class="co1">${backedhost}</span>:<span class="co1">${srcdir}</span> <span class="co1">${working}</span> \
+	<span class="sy0">&gt;&gt;</span> <span class="co1">${logfile}</span>
+    <span class="kw1">else</span>
+      <span class="co1">${rsync}</span> <span class="co1">${backedhost}</span>:<span class="co1">${srcdir}</span> <span class="co1">${working}</span> \
+	<span class="sy0">&gt;&gt;</span> <span class="co1">${logfile}</span>
+    <span class="kw1">fi</span>
+  <span class="kw1">else</span>
+    <span class="kw1">if</span> <span class="br0">&#91;</span> <span class="co1">${advexcludes}</span> <span class="re5">-gt</span> <span class="nu0">0</span> <span class="br0">&#93;</span>; <span class="kw1">then</span>
+      <span class="co1">${rsync}</span> <span class="st0">&quot;<span class="es3">${EXCLUDES}</span>&quot;</span> <span class="co1">${srcdir}</span> <span class="co1">${working}</span> \
+	<span class="sy0">&gt;&gt;</span> <span class="co1">${logfile}</span>
+    <span class="kw1">else</span>
+      <span class="co1">${rsync}</span> <span class="co1">${srcdir}</span> <span class="co1">${working}</span> \
+	<span class="sy0">&gt;&gt;</span> <span class="co1">${logfile}</span>
+    <span class="kw1">fi</span>
+  <span class="kw1">fi</span>
+<span class="kw1">done</span>
+<span class="br0">&#125;</span>
+&nbsp;
+rmtdosync <span class="br0">&#40;</span><span class="br0">&#41;</span>
+<span class="br0">&#123;</span>
+<span class="kw1">if</span> <span class="br0">&#91;</span> <span class="co1">${autosrcdir}</span> <span class="re5">-gt</span> <span class="nu0">0</span> <span class="br0">&#93;</span>; <span class="kw1">then</span>
+  <span class="re2">allsrcdir</span>=<span class="sy0">`</span><span class="kw2">ls</span> <span class="re5">-d</span> <span class="sy0">/*`</span>
+<span class="kw1">fi</span>
+<span class="kw1">for</span> srcdir <span class="kw1">in</span> <span class="co1">${allsrcdir}</span>; <span class="kw1">do</span>
+  <span class="kw1">if</span> <span class="br0">&#91;</span> <span class="co1">${advexcludes}</span> <span class="re5">-gt</span> <span class="nu0">0</span> <span class="br0">&#93;</span>; <span class="kw1">then</span>
+    <span class="co1">${rsync}</span> <span class="st0">&quot;<span class="es3">${EXCLUDES}</span>&quot;</span> <span class="co1">${srcdir}</span> <span class="co1">${rmtlogin}</span><span class="sy0">@</span><span class="co1">${rmthost}</span>:<span class="co1">${working}</span> \
+	<span class="sy0">|</span> <span class="kw2">ssh</span> <span class="re5">-l</span> <span class="co1">${rmtlogin}</span> <span class="co1">${rmthost}</span> <span class="st0">&quot;cat - &gt;&gt; <span class="es3">${logfile}</span>&quot;</span>
+  <span class="kw1">else</span>
+    <span class="co1">${rsync}</span> <span class="co1">${srcdir}</span> <span class="co1">${rmtlogin}</span><span class="sy0">@</span><span class="co1">${rmthost}</span>:<span class="co1">${working}</span> \
+	<span class="sy0">|</span> <span class="kw2">ssh</span> <span class="re5">-l</span> <span class="co1">${rmtlogin}</span> <span class="co1">${rmthost}</span> <span class="st0">&quot;cat - &gt;&gt; <span class="es3">${logfile}</span>&quot;</span>
+  <span class="kw1">fi</span>
+<span class="kw1">done</span>
+<span class="br0">&#125;</span>
+&nbsp;
+docleanup <span class="br0">&#40;</span><span class="br0">&#41;</span>
+<span class="br0">&#123;</span>
+<span class="re2">count</span>=<span class="nu0">0</span>
+<span class="br0">&#91;</span> <span class="co1">${savehours}</span> <span class="re5">-lt</span> <span class="nu0">1</span> <span class="br0">&#93;</span> <span class="sy0">&amp;&amp;</span> <span class="re2">savehours</span>=<span class="nu0">1</span>
+<span class="kw1">for</span> i <span class="kw1">in</span> <span class="sy0">`</span><span class="kw2">ls</span> <span class="re5">-t</span> <span class="co1">${hourdir}</span><span class="sy0">`</span>; <span class="kw1">do</span>
+  <span class="kw3">let</span> <span class="re2">count</span>=count+<span class="nu0">1</span>
+  <span class="kw1">if</span> <span class="br0">&#91;</span> <span class="co1">${count}</span> <span class="re5">-gt</span> <span class="co1">${savehours}</span> <span class="br0">&#93;</span>; <span class="kw1">then</span>
+    <span class="kw2">rm</span> <span class="re5">-Rf</span> <span class="co1">${hourdir}</span><span class="sy0">/</span><span class="co1">${i}</span>
+  <span class="kw1">fi</span>
+<span class="kw1">done</span>
+<span class="re2">count</span>=<span class="nu0">0</span>
+<span class="br0">&#91;</span> <span class="co1">${saveweeks}</span> <span class="re5">-gt</span> <span class="nu0">0</span> <span class="re5">-a</span> <span class="co1">${savedays}</span> <span class="re5">-lt</span> <span class="nu0">7</span> <span class="br0">&#93;</span> <span class="sy0">&amp;&amp;</span> <span class="re2">savedays</span>=<span class="nu0">7</span>
+<span class="kw1">for</span> i <span class="kw1">in</span> <span class="sy0">`</span><span class="kw2">ls</span> <span class="re5">-t</span> <span class="co1">${daydir}</span><span class="sy0">`</span>; <span class="kw1">do</span>
+  <span class="kw3">let</span> <span class="re2">count</span>=count+<span class="nu0">1</span>
+  <span class="kw1">if</span> <span class="br0">&#91;</span> <span class="co1">${count}</span> <span class="re5">-gt</span> <span class="co1">${savedays}</span> <span class="br0">&#93;</span>; <span class="kw1">then</span>
+    <span class="kw2">rm</span> <span class="re5">-Rf</span> <span class="co1">${daydir}</span><span class="sy0">/</span><span class="co1">${i}</span>
+  <span class="kw1">fi</span>
+<span class="kw1">done</span>
+<span class="re2">count</span>=<span class="nu0">0</span>
+<span class="kw1">for</span> i <span class="kw1">in</span> <span class="sy0">`</span><span class="kw2">ls</span> <span class="re5">-t</span> <span class="co1">${weekdir}</span><span class="sy0">`</span>; <span class="kw1">do</span>
+  <span class="kw3">let</span> <span class="re2">count</span>=count+<span class="nu0">1</span>
+  <span class="kw1">if</span> <span class="br0">&#91;</span> <span class="co1">${count}</span> <span class="re5">-gt</span> <span class="co1">${saveweeks}</span> <span class="br0">&#93;</span>; <span class="kw1">then</span>
+    <span class="kw2">rm</span> <span class="re5">-Rf</span> <span class="co1">${weekdir}</span><span class="sy0">/</span><span class="co1">${i}</span>
+  <span class="kw1">fi</span>
+<span class="kw1">done</span>
+<span class="br0">&#125;</span>
+&nbsp;
+rmtdocleanup <span class="br0">&#40;</span><span class="br0">&#41;</span>
+<span class="br0">&#123;</span>
+<span class="re2">count</span>=<span class="nu0">0</span>
+<span class="br0">&#91;</span> <span class="co1">${savehours}</span> <span class="re5">-lt</span> <span class="nu0">1</span> <span class="br0">&#93;</span> <span class="sy0">&amp;&amp;</span> <span class="re2">savehours</span>=<span class="nu0">1</span>
+<span class="kw1">for</span> i <span class="kw1">in</span> <span class="sy0">`</span><span class="kw2">ssh</span> <span class="re5">-l</span> <span class="co1">${rmtlogin}</span> <span class="co1">${rmthost}</span> <span class="st0">&quot;ls -t <span class="es3">${hourdir}</span>&quot;</span><span class="sy0">`</span>; <span class="kw1">do</span>
+  <span class="kw3">let</span> <span class="re2">count</span>=count+<span class="nu0">1</span>
+  <span class="kw1">if</span> <span class="br0">&#91;</span> <span class="co1">${count}</span> <span class="re5">-gt</span> <span class="co1">${savehours}</span> <span class="br0">&#93;</span>; <span class="kw1">then</span>
+    <span class="kw2">ssh</span> <span class="re5">-l</span> <span class="co1">${rmtlogin}</span> <span class="co1">${rmthost}</span> <span class="st0">&quot;rm -Rf <span class="es3">${hourdir}</span>/<span class="es3">${i}</span>&quot;</span>
+  <span class="kw1">fi</span>
+<span class="kw1">done</span>
+<span class="re2">count</span>=<span class="nu0">0</span>
+<span class="br0">&#91;</span> <span class="co1">${saveweeks}</span> <span class="re5">-gt</span> <span class="nu0">0</span> <span class="re5">-a</span> <span class="co1">${savedays}</span> <span class="re5">-lt</span> <span class="nu0">7</span> <span class="br0">&#93;</span> <span class="sy0">&amp;&amp;</span> <span class="re2">savedays</span>=<span class="nu0">7</span>
+<span class="kw1">for</span> i <span class="kw1">in</span> <span class="sy0">`</span><span class="kw2">ssh</span> <span class="re5">-l</span> <span class="co1">${rmtlogin}</span> <span class="co1">${rmthost}</span> <span class="st0">&quot;ls -t <span class="es3">${daydir}</span>&quot;</span><span class="sy0">`</span>; <span class="kw1">do</span>
+  <span class="kw3">let</span> <span class="re2">count</span>=count+<span class="nu0">1</span>
+  <span class="kw1">if</span> <span class="br0">&#91;</span> <span class="co1">${count}</span> <span class="re5">-gt</span> <span class="co1">${savedays}</span> <span class="br0">&#93;</span>; <span class="kw1">then</span>
+    <span class="kw2">ssh</span> <span class="re5">-l</span> <span class="co1">${rmtlogin}</span> <span class="co1">${rmthost}</span> <span class="st0">&quot;rm -Rf <span class="es3">${daydir}</span>/<span class="es3">${i}</span>&quot;</span>
+  <span class="kw1">fi</span>
+<span class="kw1">done</span>
+<span class="re2">count</span>=<span class="nu0">0</span>
+<span class="kw1">for</span> i <span class="kw1">in</span> <span class="sy0">`</span><span class="kw2">ssh</span> <span class="re5">-l</span> <span class="co1">${rmtlogin}</span> <span class="co1">${rmthost}</span> <span class="st0">&quot;ls -t <span class="es3">${weekdir}</span>&quot;</span><span class="sy0">`</span>; <span class="kw1">do</span>
+  <span class="kw3">let</span> <span class="re2">count</span>=count+<span class="nu0">1</span>
+  <span class="kw1">if</span> <span class="br0">&#91;</span> <span class="co1">${count}</span> <span class="re5">-gt</span> <span class="co1">${saveweeks}</span> <span class="br0">&#93;</span>; <span class="kw1">then</span>
+    <span class="kw2">ssh</span> <span class="re5">-l</span> <span class="co1">${rmtlogin}</span> <span class="co1">${rmthost}</span> <span class="st0">&quot;rm -Rf <span class="es3">${weekdir}</span>/<span class="es3">${i}</span>&quot;</span>
+  <span class="kw1">fi</span>
+<span class="kw1">done</span>
+<span class="br0">&#125;</span>
+&nbsp;
+inuse <span class="br0">&#40;</span><span class="br0">&#41;</span>
+<span class="br0">&#123;</span>
+<span class="kw3">echo</span> <span class="st0">&quot;I am already syncing host <span class="es3">${hostid}</span>&quot;</span>
+<span class="kw3">exit</span> <span class="nu0">1</span>
+<span class="br0">&#125;</span>
+&nbsp;
+mountfail <span class="br0">&#40;</span><span class="br0">&#41;</span>
+<span class="br0">&#123;</span>
+<span class="kw3">echo</span> <span class="st0">&quot;I can't mount filesystem on host <span class="es3">${hostid}</span>&quot;</span>
+<span class="kw3">exit</span> <span class="nu0">1</span>
+<span class="br0">&#125;</span>
+&nbsp;
+umountfail <span class="br0">&#40;</span><span class="br0">&#41;</span>
+<span class="br0">&#123;</span>
+<span class="kw3">echo</span> <span class="st0">&quot;I can't unmount filesystem on host <span class="es3">${hostid}</span>&quot;</span>
+<span class="kw3">exit</span> <span class="nu0">1</span>
+<span class="br0">&#125;</span>
+&nbsp;
+<span class="br0">&#91;</span> <span class="re5">-f</span> <span class="co1">${lockfile}</span> <span class="br0">&#93;</span> <span class="sy0">&amp;&amp;</span> inuse
+&nbsp;
+mounting
+&nbsp;
+<span class="kw1">if</span> <span class="br0">&#91;</span> <span class="co1">${rmt}</span> <span class="re5">-gt</span> <span class="nu0">0</span> <span class="br0">&#93;</span>; <span class="kw1">then</span>
+  rmtdodir
+<span class="kw1">else</span>
+  dodir
+<span class="kw1">fi</span>
+&nbsp;
+<span class="kw1">if</span> <span class="br0">&#91;</span> <span class="co1">${rmt}</span> <span class="re5">-gt</span> <span class="nu0">0</span> <span class="br0">&#93;</span>; <span class="kw1">then</span>
+  <span class="kw2">ssh</span> <span class="re5">-l</span> <span class="co1">${rmtlogin}</span> <span class="co1">${rmthost}</span> <span class="st0">&quot;touch <span class="es3">${lockfile}</span>&quot;</span>
+  <span class="kw2">ssh</span> <span class="re5">-l</span> <span class="co1">${rmtlogin}</span> <span class="co1">${rmthost}</span> <span class="st0">&quot;date &gt; <span class="es3">${logfile}</span>&quot;</span>
+<span class="kw1">else</span>
+  <span class="kw2">touch</span> <span class="co1">${lockfile}</span>
+  <span class="kw2">date</span> <span class="sy0">&gt;</span> <span class="co1">${logfile}</span>
+<span class="kw1">fi</span>
+&nbsp;
+&nbsp;
+<span class="kw1">case</span> <span class="co1">${cmdline}</span> <span class="kw1">in</span>
+  -s<span class="br0">&#41;</span>
+    <span class="kw1">if</span> <span class="br0">&#91;</span> <span class="co1">${rmt}</span> <span class="re5">-gt</span> <span class="nu0">0</span> <span class="br0">&#93;</span>; <span class="kw1">then</span>
+      rmtdosync
+    <span class="kw1">else</span>
+      dosync
+    <span class="kw1">fi</span>
+  <span class="sy0">;;</span>
+  <span class="sy0">*</span><span class="br0">&#41;</span>
+    <span class="kw1">if</span> <span class="br0">&#91;</span> <span class="co1">${rmt}</span> <span class="re5">-gt</span> <span class="nu0">0</span> <span class="br0">&#93;</span>; <span class="kw1">then</span>
+      rmtdosync
+    <span class="kw1">else</span>
+      dosync
+    <span class="kw1">fi</span>
+    <span class="kw1">if</span> <span class="br0">&#91;</span> <span class="co1">${rmt}</span> <span class="re5">-gt</span> <span class="nu0">0</span> <span class="br0">&#93;</span>; <span class="kw1">then</span>
+      rmtdohour
+    <span class="kw1">else</span>
+      dohour
+    <span class="kw1">fi</span>
+    <span class="kw1">if</span> <span class="br0">&#91;</span> <span class="co1">${newday}</span> == <span class="co1">${chour}</span> <span class="br0">&#93;</span>; <span class="kw1">then</span>
+      <span class="kw1">if</span> <span class="br0">&#91;</span> <span class="co1">${rmt}</span> <span class="re5">-gt</span> <span class="nu0">0</span> <span class="br0">&#93;</span>; <span class="kw1">then</span>
+        rmtdoday
+      <span class="kw1">else</span>
+        doday
+      <span class="kw1">fi</span>
+    <span class="kw1">fi</span>
+    <span class="kw1">if</span> <span class="br0">&#91;</span> <span class="co1">${dow}</span> == <span class="nu0">0</span> <span class="re5">-a</span> <span class="co1">${newday}</span> == <span class="co1">${chour}</span> <span class="br0">&#93;</span>; <span class="kw1">then</span>
+      <span class="kw1">if</span> <span class="br0">&#91;</span> <span class="co1">${rmt}</span> <span class="re5">-gt</span> <span class="nu0">0</span> <span class="br0">&#93;</span>; <span class="kw1">then</span>
+        rmtdoweek
+      <span class="kw1">else</span>
+        doweek
+      <span class="kw1">fi</span>
+    <span class="kw1">fi</span>
+    <span class="kw1">if</span> <span class="br0">&#91;</span> <span class="co1">${rmt}</span> <span class="re5">-gt</span> <span class="nu0">0</span> <span class="br0">&#93;</span>; <span class="kw1">then</span>
+      rmtdocleanup
+    <span class="kw1">else</span>
+      docleanup
+    <span class="kw1">fi</span>
+  <span class="sy0">;;</span>
+<span class="kw1">esac</span>
+&nbsp;
+<span class="kw1">if</span> <span class="br0">&#91;</span> <span class="co1">${rmt}</span> <span class="re5">-gt</span> <span class="nu0">0</span> <span class="br0">&#93;</span>; <span class="kw1">then</span>
+  <span class="kw2">ssh</span> <span class="re5">-l</span> <span class="co1">${rmtlogin}</span> <span class="co1">${rmthost}</span> <span class="st0">&quot;touch <span class="es3">${backuproot}</span>/<span class="es3">${hostid}</span>/lastrun.time&quot;</span>
+  <span class="kw2">ssh</span> <span class="re5">-l</span> <span class="co1">${rmtlogin}</span> <span class="co1">${rmthost}</span> <span class="st0">&quot;rm -f <span class="es3">${lockfile}</span>&quot;</span>
+  <span class="kw2">ssh</span> <span class="re5">-l</span> <span class="co1">${rmtlogin}</span> <span class="co1">${rmthost}</span> <span class="st0">&quot;date &gt;&gt; <span class="es3">${logfile}</span>&quot;</span>
+<span class="kw1">else</span>
+  <span class="kw2">touch</span> <span class="co1">${backuproot}</span><span class="sy0">/</span><span class="co1">${hostid}</span><span class="sy0">/</span>lastrun.time
+  <span class="kw2">rm</span> <span class="re5">-f</span> <span class="co1">${lockfile}</span>
+  <span class="kw2">date</span> <span class="sy0">&gt;&gt;</span> <span class="co1">${logfile}</span>
+<span class="kw1">fi</span>
+&nbsp;
+<span class="kw1">if</span> <span class="br0">&#91;</span> <span class="co1">${advexcludes}</span> <span class="re5">-gt</span> <span class="nu0">0</span> <span class="br0">&#93;</span>; <span class="kw1">then</span>
+  <span class="kw2">rm</span> <span class="re5">-f</span> <span class="co1">${excludesfile}</span>
+<span class="kw1">fi</span>
+&nbsp;
+umounting
+&nbsp;
+<span class="kw3">echo</span> <span class="st0">&quot;Backup for <span class="es3">${hostid}</span> is complete...&quot;</span></pre>
+</dd></dl>
+
+</div>

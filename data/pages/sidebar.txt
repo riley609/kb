@@ -1,0 +1,108 @@
+**Linux**
+
+   * __RHEL CheatSheet__
+    - [[Version 5 vs Version 6 vs Version 7 ]]
+
+   * __SSH Tips and Tricks__
+    - [[SSH config file]]
+    - [[Disable SSH timeouts on Linux Server]]
+    - [[Screen Command]]
+  
+   * __Java__
+     -[[Java Path Update]]
+
+   * __Grub and LILO__
+    - [[Move Grub to Different Hard Drive]]
+    - [[Create large Partitions]]
+
+   * __Bash__
+    - [[Find and Replace accross multiple files]]
+    - [[Script for extracting Hardware info]]
+    - [[Script for remote backup - rsync]]
+    - [[Get full root access with only sudo access]]
+
+   * __Linux LVM__
+    - [[Create,expand Linux LVM]]
+    - [[Expand Linux LVM Centos]]
+
+   * __SSL Certificates__
+    - [[Install SSL Cert on Nginx]]
+    - [[Generate OpenSSL CSR on Apache]]
+    
+   * __Virtualization__
+     * [[Install SmartMonTools On XenServer]]
+     * [[MegaCLI on Xen]]
+     * [[Kill frozen Xen VM]]
+     * [[How to move a VM's Storage]]
+ 
+   * __Linux Systems Security__
+    - [[Malware Detection]]
+    - [[Email Alert of User SSH login]]
+
+   * __TimeShift__
+    - [[Restore system to previous state TimeShift]]
+
+   * __Steganography__
+    - [[Hiding files in an image]]
+   
+   * __Enable mcrypt in PHP__
+    - [[Enable Mcrypt]]
+   * __NTFS-3g Mount Directories__
+    - [[Mount shares with NTFS-3g]]
+  
+   * __Idle Linux Sessions__
+    - [[Kill idle sessions]]
+
+   * __Clear Linux Cached Memory__
+    - [[Clear cache memory]]
+
+   * __Pause and Start Process__
+    - [[Stop and Pause Process on Linux]]
+
+   * __Linux Locales Error__
+    - [[Fix Locales Error]]
+
+   * __Software Repositories__
+    - [[Create Local Yum Repo]]
+   
+   * __Ubuntu Screen Brightness__
+    - [[Screen Brightness function key not working]]
+
+**Databases**
+     - [[Change MySQL users password]]
+
+**Networking**
+     - [[How to make cat 5e network cables]]
+     - [[Create bonded interface - Linux]]
+
+**Windows**
+   * __Master Boot Repair__
+     - [[MBR Repair]]
+
+   * __Recover Lost Passwords__
+    - [[Lost Windows User Account passwords]]
+   
+   * __Windows Mounts__
+    - [[Mount Windows Network Shares on Linux]]
+
+   * __Other Windows Stuff__
+     - [[Windows Start Button]]
+   
+**VCS - Version Control Systems**
+    - [[Basic Git Commands]]
+    - [[Gitlist Web Git Browser]]
+    - [[Svn Rollback/Revert]]
+    - [[Git Rollback/Revert]]
+    - [[Undo git pull origin master]] 
+    - [[Convert SVN to GIT]]
+
+**Puppet**
+     - [[SSL cert sign for puppet agent]]
+
+**Cool Links**
+     - [[http://sysadminday.com|Sys Admins Appreciation Day]]
+     - [[http://www.tecmint.com/20-funny-commands-of-linux-or-linux-is-fun-in-terminal]]
+     - [[http://elitedaily.com/women/cats-literally-suck/709388/]]
+     - Bash Intro [[http://tldp.org/HOWTO/Bash-Prog-Intro-HOWTO.html]]
+     - Advanced Bash Scripting [[http://www.tldp.org/LDP/abs/html/]]
+     - Check if you throttled [[https://www.battleforthenet.com/internethealthtest/ ]]

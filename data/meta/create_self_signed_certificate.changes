@@ -1,0 +1,5 @@
+1431955860	127.0.0.1	C	create_self_signed_certificate	root	created	
+1431956110	127.0.0.1	E	create_self_signed_certificate	root		
+1431956141	127.0.0.1	E	create_self_signed_certificate	root		
+1431956159	127.0.0.1	E	create_self_signed_certificate	root		
+1431956206	127.0.0.1	D	create_self_signed_certificate	root	removed	

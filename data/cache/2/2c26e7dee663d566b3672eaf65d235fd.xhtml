@@ -1,0 +1,112 @@
+
+<h1 class="sectionedit1" id="git_undo_reset_or_revert">Git undo, reset or revert</h1>
+<div class="level1">
+
+<p>
+If you have found this page you probably came here since you wanted to clear your working directory from all the changes that you have made. 
+</p>
+
+<p>
+The simple answer is: 
+# Clear working directory tree from all changes 
+</p>
+<pre class="code">$ git checkout -f HEAD </pre>
+
+<p>
+This is, however, not the best way to do it. A better way is: 
+# Clears the working directory tree, and stashes all the changes. 
+</p>
+<pre class="code">$ git stash </pre>
+
+<p>
+git stash allows you to get your changes back any time you need them in case you change your mind. It is also possible to inspect and manipulate the stashes. 
+# List all the stashes 
+</p>
+<pre class="code">$ git stash list 
+stash@{0}: WIP on admin_ui: 0c1a80a Removed annotation from JdbcAdminService, it is now explicity initialized in the applicationContext. 
+stash@{1}: WIP on admin_ui: 14e12e6 Added foreign keys for UserRole 
+stash@{2}: WIP on master: d188ecd Merge branch &#039;master&#039; of semc-git:customercare 
+stash@{3}: WIP on master: 3763795 More work on user_details. 
+... </pre>
+
+<p>
+# Apply the latest stash, and remove it from the stack 
+$ git stash pop 
+</p>
+
+<p>
+# Apply a named patch, but leave it on the stack 
+</p>
+<pre class="code">$ git stash apply stash@{2}  </pre>
+
+<p>
+# Drop a stash 
+</p>
+<pre class="code"> $ git stash drop stash@{3}  </pre>
+
+<p>
+# Clear the entire stash stack (almost never needed) 
+</p>
+<pre class="code"> $ git stash clear </pre>
+
+<p>
+# A better way to purge the stash 
+</p>
+<pre class="code">$ git reflog expire --expire=30.days refs/stash </pre>
+
+<p>
+What about git reset then, it sounds like it should do about the same as git co -f HEAD. It doesn&#039;t. git reset is used for setting the current reference pointer, HEAD. 
+</p>
+
+<p>
+# Reset the latest commit, and leave the changes in the index. 
+</p>
+<pre class="code">$ git reset --soft HEAD^ </pre>
+
+<p>
+# Reset the latest commit, and leave the changes in the working directory 
+</p>
+<pre class="code">$ git reset HEAD^ </pre>
+
+<p>
+# Undo add, move the changes from the index to the working directory 
+</p>
+<pre class="code">$ git reset </pre>
+
+<p>
+# Reset the latest successful pull or merge 
+</p>
+<pre class="code">$ git reset --hard ORIG_HEAD </pre>
+
+<p>
+# Reset the latest failed pull or merge 
+</p>
+<pre class="code">$ git reset --hard </pre>
+
+<p>
+# Reset the latest pull or merge, into a dirty working tree 
+</p>
+<pre class="code">$ git reset --merge ORIG_HEAD </pre>
+
+<p>
+You can do more things with reset, but the above covers the typical cases. And now to the last thing, git revert. What does it do? git revert creates a new commit that is the opposite of the commit it names. 
+</p>
+
+<p>
+# Show the commits 
+</p>
+<pre class="code">$ git log --oneline 
+4717a5c new line 
+7e38e95 added tapir file </pre>
+
+<p>
+# Revert the commit named, 4717a5c, and commit it. 
+</p>
+<pre class="code">$ git revert 4717a5c </pre>
+
+<p>
+# Revert the HEAD commit, but don&#039;t commit it 
+</p>
+<pre class="code">$ git revert -n HEAD </pre>
+
+</div>

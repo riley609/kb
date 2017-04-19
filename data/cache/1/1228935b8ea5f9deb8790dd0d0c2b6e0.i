@@ -1,0 +1,22 @@
+a:52:{i:0;a:3:{i:0;s:14:"document_start";i:1;a:0:{}i:2;i:0;}i:1;a:3:{i:0;s:6:"header";i:1;a:3:{i:0;s:28:"Mount network shares (Linux)";i:1;i:1;i:2;i:1;}i:2;i:1;}i:2;a:3:{i:0;s:12:"section_open";i:1;a:1:{i:0;i:1;}i:2;i:1;}i:3;a:3:{i:0;s:6:"p_open";i:1;a:0:{}i:2;i:1;}i:4;a:3:{i:0;s:5:"cdata";i:1;a:1:{i:0;s:35:"The fileserver is a Windows Server.";}i:2;i:45;}i:5;a:3:{i:0;s:9:"linebreak";i:1;a:0:{}i:2;i:80;}i:6;a:3:{i:0;s:5:"cdata";i:1;a:1:{i:0;s:99:"
+To mount network shares on a Windows Server two packages must be available on your Linux computer:";}i:2;i:82;}i:7;a:3:{i:0;s:9:"linebreak";i:1;a:0:{}i:2;i:181;}i:8;a:3:{i:0;s:5:"cdata";i:1;a:1:{i:0;s:1:"
+";}i:2;i:183;}i:9;a:3:{i:0;s:14:"monospace_open";i:1;a:0:{}i:2;i:184;}i:10;a:3:{i:0;s:5:"cdata";i:1;a:1:{i:0;s:9:"smbclient";}i:2;i:186;}i:11;a:3:{i:0;s:15:"monospace_close";i:1;a:0:{}i:2;i:195;}i:12;a:3:{i:0;s:5:"cdata";i:1;a:1:{i:0;s:5:" and ";}i:2;i:197;}i:13;a:3:{i:0;s:14:"monospace_open";i:1;a:0:{}i:2;i:202;}i:14;a:3:{i:0;s:5:"cdata";i:1;a:1:{i:0;s:10:"cifs-utils";}i:2;i:204;}i:15;a:3:{i:0;s:15:"monospace_close";i:1;a:0:{}i:2;i:214;}i:16;a:3:{i:0;s:7:"p_close";i:1;a:0:{}i:2;i:216;}i:17;a:3:{i:0;s:6:"p_open";i:1;a:0:{}i:2;i:216;}i:18;a:3:{i:0;s:11:"strong_open";i:1;a:0:{}i:2;i:218;}i:19;a:3:{i:0;s:5:"cdata";i:1;a:1:{i:0;s:73:"1. Check the availability of network shares on viam-fs001.viamedia.co.za:";}i:2;i:220;}i:20;a:3:{i:0;s:12:"strong_close";i:1;a:0:{}i:2;i:293;}i:21;a:3:{i:0;s:7:"p_close";i:1;a:0:{}i:2;i:295;}i:22;a:3:{i:0;s:12:"preformatted";i:1;a:1:{i:0;s:43:"   smbclient -L servername -U your.username";}i:2;i:295;}i:23;a:3:{i:0;s:6:"p_open";i:1;a:0:{}i:2;i:295;}i:24;a:3:{i:0;s:11:"strong_open";i:1;a:0:{}i:2;i:343;}i:25;a:3:{i:0;s:5:"cdata";i:1;a:1:{i:0;s:37:"2. Mount e.g. the network share name ";}i:2;i:345;}i:26;a:3:{i:0;s:14:"monospace_open";i:1;a:0:{}i:2;i:382;}i:27;a:3:{i:0;s:5:"cdata";i:1;a:1:{i:0;s:4:"data";}i:2;i:384;}i:28;a:3:{i:0;s:15:"monospace_close";i:1;a:0:{}i:2;i:388;}i:29;a:3:{i:0;s:5:"cdata";i:1;a:1:{i:0;s:29:" into your local file system:";}i:2;i:390;}i:30;a:3:{i:0;s:12:"strong_close";i:1;a:0:{}i:2;i:419;}i:31;a:3:{i:0;s:7:"p_close";i:1;a:0:{}i:2;i:421;}i:32;a:3:{i:0;s:6:"p_open";i:1;a:0:{}i:2;i:421;}i:33;a:3:{i:0;s:5:"cdata";i:1;a:1:{i:0;s:35:"a) Create a local mount point e.g. ";}i:2;i:423;}i:34;a:3:{i:0;s:14:"monospace_open";i:1;a:0:{}i:2;i:458;}i:35;a:3:{i:0;s:5:"cdata";i:1;a:1:{i:0;s:7:"VM-data";}i:2;i:460;}i:36;a:3:{i:0;s:15:"monospace_close";i:1;a:0:{}i:2;i:467;}i:37;a:3:{i:0;s:5:"cdata";i:1;a:1:{i:0;s:24:" in your home directory:";}i:2;i:469;}i:38;a:3:{i:0;s:7:"p_close";i:1;a:0:{}i:2;i:493;}i:39;a:3:{i:0;s:12:"preformatted";i:1;a:1:{i:0;s:36:"   mkdir /home/your_username/VM-data";}i:2;i:493;}i:40;a:3:{i:0;s:6:"p_open";i:1;a:0:{}i:2;i:493;}i:41;a:3:{i:0;s:5:"cdata";i:1;a:1:{i:0;s:27:"b) Mount the network share ";}i:2;i:534;}i:42;a:3:{i:0;s:14:"monospace_open";i:1;a:0:{}i:2;i:561;}i:43;a:3:{i:0;s:5:"cdata";i:1;a:1:{i:0;s:4:"data";}i:2;i:563;}i:44;a:3:{i:0;s:15:"monospace_close";i:1;a:0:{}i:2;i:567;}i:45;a:3:{i:0;s:5:"cdata";i:1;a:1:{i:0;s:27:" to your local moint point:";}i:2;i:569;}i:46;a:3:{i:0;s:7:"p_close";i:1;a:0:{}i:2;i:596;}i:47;a:3:{i:0;s:12:"preformatted";i:1;a:1:{i:0;s:109:"   sudo mount -t cifs -o username=your.username,rw,gid=1000,uid=1000 //servername.mydomain.co.za/data VM-data";}i:2;i:596;}i:48;a:3:{i:0;s:4:"code";i:1;a:3:{i:0;s:635:"
+#!/bin/bash
+AUTHNAME="my.username"
+CREDS="credentials=/home/${USER}/credentials.viam,iocharset=utf8,rw,gid=1000,uid=1000"
+MOUNT1=/home/${USER}/NET_DIR
+MOUNT2=/home/${USER}/NET/DATA
+MOUNT3=/home/${USER}/NET/ENTERTAIN
+MOUNT4=/home/${USER}/NET/ENTERTAIN2
+
+mountpoint -q ${MOUNT1}  || sudo mount.cifs //192.168.12.11/home$/${AUTHNAME} ${MOUNT1} -o ${CREDS}
+mountpoint -q ${MOUNT2}  || sudo mount.cifs //192.168.12.11/data ${MOUNT2} -o ${CREDS}
+mountpoint -q ${MOUNT3}  || sudo mount.cifs //192.168.12.11/entertainment ${MOUNT3} -o ${CREDS}
+mountpoint -q ${MOUNT4}  || sudo mount.cifs //192.168.12.11/entertainment2 ${MOUNT4} -o ${CREDS}
+
+";i:1;s:4:"bash";i:2;s:16:"homedir_mount.sh";}i:2;i:716;}i:49;a:3:{i:0;s:4:"code";i:1;a:3:{i:0;s:59:"
+
+username=my.username
+password=**********
+domain=mydomain
+";i:1;s:6:"config";i:2;s:16:"credentials.viam";}i:2;i:1388;}i:50;a:3:{i:0;s:13:"section_close";i:1;a:0:{}i:2;i:1479;}i:51;a:3:{i:0;s:12:"document_end";i:1;a:0:{}i:2;i:1479;}}

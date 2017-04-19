@@ -1,0 +1,60 @@
+
+<h1 class="sectionedit1" id="generate_a_csr_with_openssl">Generate a CSR with OpenSSL</h1>
+<div class="level1">
+
+<p>
+<strong><em class="u">Prerequisites</em></strong>
+What you&#039;ll need first is to install Openssl on your server, this is a common package and will be available on all of the major distros through their package installer. Here is how you check to see if it is installed in a “Yum” style system:
+</p>
+<pre class="code">  # rpm -qa | grep -i openssl</pre>
+
+<p>
+The above command should return the following packages, or something similar:
+</p>
+
+<p>
+openssl-0.9.8e-7.el5 openssl-0.9.8e-7.el5 openssl-devel-0.9.8e-7.el5
+</p>
+
+<p>
+If it didn&#039;t you&#039;ll want to run the following:
+</p>
+<pre class="code">  # yum install openssl openssl-devel</pre>
+
+<p>
+<em class="u"><strong>Generate the RSA key</strong></em>
+Create a RSA key for your Apache server, since every distro is different in where to place the certificates, we are just going to place it in an arbitrary spot:
+</p>
+<pre class="code">  # mkdir ~/domain.com.ssl/
+  # cd ~/domain.com.ssl/</pre>
+
+<p>
+Type the following command to generate a private key.
+</p>
+<pre class="code">  # openssl genrsa -out ~/domain.com.ssl/domain.com.key 2048</pre>
+
+<p>
+<em class="u"><strong>Create a CSR</strong></em>
+Type the following command to create a CSR with the RSA private key (output will be PEM format):
+</p>
+<pre class="code">  # openssl req -new -sha256 -key ~/domain.com.ssl/domain.com.key -out ~/domain.com.ssl/domain.com.csr</pre>
+
+<p>
+When creating a CSR you must follow these conventions. Enter the information to be displayed in the certificate. The following characters can not be used for the Organization Name or the Organizational Unit: &lt; &gt; ~ ! @ # $ % ^ * / \ ( ) ?.,&amp;
+</p>
+
+<p>
+<strong>Warning: Leave the challenge password blank (press enter)</strong><strong>Bold Text</strong>
+</p>
+
+<p>
+<em class="u"><strong>Verify your CSR</strong></em>
+</p>
+<pre class="code">  # openssl req -noout -text -in ~/domain.com.ssl/domain.com.csr</pre>
+
+<p>
+<em class="u"><strong>Submit your CSR</strong></em>
+From this point you have to take your CSR that you created here and submit it to a certificate authority. 
+</p>
+
+</div>

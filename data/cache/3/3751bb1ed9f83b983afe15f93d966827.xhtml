@@ -1,0 +1,108 @@
+
+<h1 class="sectionedit1" id="a_complete_guide_to_git-svn_conversions">A complete guide to git-svn conversions</h1>
+<div class="level1">
+
+<p>
+Our goal is to do a complete conversion of our Subversion repository and end up with a bare Git repository acceptable for sharing with others (privately or publicly). Bare repositories are ones without a local working checkout of the files available for modifications. They are the recommended format for shared repositories.
+</p>
+
+<p>
+<strong>1. Retrieve a list of all Subversion committers</strong>
+</p>
+
+<p>
+Subversion simply lists the username for each commit. Git’s commits have much richer data, but at its simplest, the commit author needs to have a name and email listed. By default the git-svn tool will just list the SVN username in both the author and email fields. But with a little bit of work, you can create a list of all SVN users and what their corresponding Git name and emails are. This list can be used by git-svn to transform plain svn usernames into proper Git committers.
+</p>
+
+<p>
+From the root of your local Subversion checkout, run this command:
+</p>
+<pre class="code">svn log -q | awk -F &#039;|&#039; &#039;/^r/ {sub(&quot;^ &quot;, &quot;&quot;, $2); sub(&quot; $&quot;, &quot;&quot;, $2); print $2&quot; = &quot;$2&quot; &lt;&quot;$2&quot;&gt;&quot;}&#039; | sort -u &gt; authors-transform.txt</pre>
+
+<p>
+That will grab all the log messages, pluck out the usernames, eliminate any duplicate usernames, sort the usernames and place them into a “authors-transform.txt” file. Now edit each line in the file. For example, convert:
+</p>
+<pre class="code">jwilkins = jwilkins &lt;jwilkins&gt;
+into this:
+
+jwilkins = John Albin Wilkins &lt;johnalbin@example.com&gt;</pre>
+
+<p>
+<strong>2. Clone the Subversion repository using git-svn</strong>
+</p>
+<pre class="code">git svn clone [SVN repo URL] --no-metadata -A authors-transform.txt --stdlayout ~/temp</pre>
+
+<p>
+This will do the standard git-svn transformation (using the authors-transform.txt file you created in step 
+</p>
+
+<p>
+1) and place the git repository in the “~/temp” folder inside your home directory.
+</p>
+
+<p>
+3. Convert svn:ignore properties to .gitignore
+</p>
+
+<p>
+If your svn repo was using svn:ignore properties, you can easily convert this to a .gitignore file using:
+</p>
+<pre class="code">cd ~/temp
+git svn show-ignore &gt; .gitignore
+git add .gitignore
+git commit -m &#039;Convert svn:ignore properties to .gitignore.&#039;</pre>
+
+<p>
+<strong>4. Push repository to a bare git repository</strong>
+</p>
+
+<p>
+<strong>First, create a bare repository and make its default branch match svn’s “trunk” branch name.</strong>
+</p>
+<pre class="code">git init --bare ~/new-bare.git
+cd ~/new-bare.git
+git symbolic-ref HEAD refs/heads/trunk</pre>
+
+<p>
+Then push the temp repository to the new bare repository.
+</p>
+<pre class="code">cd ~/temp
+git remote add bare ~/new-bare.git
+git config remote.bare.push &#039;refs/remotes/*:refs/heads/*&#039;
+git push bare</pre>
+
+<p>
+You can now safely delete the ~/temp repository.
+</p>
+
+<p>
+<strong>5. Rename “trunk” branch to “master”</strong>
+</p>
+
+<p>
+Your main development branch will be named “trunk” which matches the name it was in Subversion. You’ll want to rename it to Git’s standard “master” branch using:
+</p>
+<pre class="code">cd ~/new-bare.git
+git branch -m trunk master</pre>
+
+<p>
+<strong>6. Clean up branches and tags</strong>
+</p>
+
+<p>
+git-svn makes all of Subversions tags into very-short branches in Git of the form “tags/name”. You’ll want to convert all those branches into actual Git tags using:
+</p>
+<pre class="code">  cd ~/new-bare.git
+  git for-each-ref --format=&#039;%(refname)&#039; refs/heads/tags |
+  cut -d / -f 4 |
+  while read ref
+  do
+  git tag &quot;$ref&quot; &quot;refs/heads/tags/$ref&quot;;
+  git branch -D &quot;tags/$ref&quot;;
+ done</pre>
+
+<p>
+This step will take a bit of typing. <img src="/kb/lib/images/smileys/icon_smile.gif" class="icon" alt=":-)" /> But, don’t worry; your unix shell will provide a &gt; secondary prompt for the extra-long command that starts with git for-each-ref.
+</p>
+
+</div>

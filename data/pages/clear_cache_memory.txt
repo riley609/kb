@@ -1,0 +1,24 @@
+**How To Clear Linux Cached Memory**
+----------
+
+By default, every Linux OS has an efficient memory management system used to clear the buffer cache periodically. You can manually free up the memory cache with the following simple command:
+          sk@sk:~$ sudo sh -c "sync; echo 3 > /proc/sys/vm/drop_caches"
+However, if you want to force the Linux OS to do clearing memory cache on a particular interval, just add the command to cron job. Here, I show you how.
+
+Open up your terminal and enter the following command to create a file called cacheclear.sh. Say for example, I create cacheclear.sh file in my /home directory:
+
+          sk@sk:~$ sudo vi /home/cacheclear.sh
+Add the following lines to cacheclear.sh file:
+
+       #!/bin/sh 
+        sudo sh -c "sync; echo 3 > /proc/sys/vm/drop_caches"
+Save and exit the file. Now add this file to your crontab:
+
+         sk@sk:~$ sudo crontab -e
+This command opens the current user cron file. If you want to set it to some other user, use the following command instead:
+
+         sk@sk:~$ sudo crontab -e -u username
+Add the following line at the end:
+
+         0 * * * * /home/cacheclear.sh
+Save and exit the file. Once you’re done, cron job will run this command every hour and will clear the system memory caches.

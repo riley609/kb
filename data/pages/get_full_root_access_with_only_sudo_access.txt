@@ -1,0 +1,9 @@
+====== How to become root with sudo rights: ======
+
+1.Go to your home directory
+
+2. sudo less .bash_profile
+
+3.type !/bin/bash and you are root.
+
+4.exit to gain sudo access again.

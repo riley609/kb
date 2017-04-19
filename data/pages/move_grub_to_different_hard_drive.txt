@@ -1,0 +1,4 @@
+====== Grub install to different drive: ======
+Ubuntu grub install to different drive from /dev/sda to /dev/sdb
+  
+  grub-install /dev/sdb

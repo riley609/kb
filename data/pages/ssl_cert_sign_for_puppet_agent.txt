@@ -1,0 +1,71 @@
+====== PUPPET ======
+---------------
+Puppet uses SSL to communicate from the puppet master to the puppet agents. Using SSL ensures that all communication from the agent to the master is encrypted. This is especially important when you consider the facts are being transmitted via factor. These facts include a lot of low level system information including ip addresses, os, and even ssh keys. Encryption is a must because of this. Luckily, puppet has built this in and the puppet certificate manager makes managing this easy.
+
+**Connecting a New Agent:**
+----------------------
+Every agent issues a certificate signing request, or CSR, to the puppet master. In return the master signs the agent’s CSR, thereby allowing the SSL communication. We will be using agent1.localdomain in the following examples.
+
+To sign a new agent you need to run the following commands.
+On the agent
+
+   puppet agent --test
+This will create the puppet certificate and send it to the puppet master. The first time you run this you will get an error that looks like this:
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+info: Creating a new SSL key for agent1.localdomain
+warning: peer certificate won't be verified in this SSL session
+info: Caching certificate for ca
+warning: peer certificate won't be verified in this SSL session
+warning: peer certificate won't be verified in this SSL session
+info: Creating a new SSL certificate request for agent1.localdomain
+info: Certificate Request fingerprint (md5): FD:E7:41:C9:2C:B7:5C:27:11:0C:8F:9C:1D:F6:F9:46
+warning: peer certificate won't be verified in this SSL session
+warning: peer certificate won't be verified in this SSL session
+warning: peer certificate won't be verified in this SSL session
+Exiting; no certificate found and waitforcert is disabled
+The error is generated because the puppet certificate has not been signed yet. So let’s get to the good stuff and sign it.
+
+
+On the puppet master Run this command:
+
+   puppet cert list
+This will list any puppet certificates that have not been signed. It should look like this:
+agent1.localdomain (FD:E7:41:C9:2C:B7:5C:27:11:0C:8F:9C:1D:F6:F9:46)
+To sign this agent’s CSR run the command:
+
+   puppet cert sign agent1.localdomain
+The agent is now ready to connect to puppet.
+
+
+**Revoking a Puppet Certificate**
+----------------------
+Down the road you may need to revoke the puppet certificate for an agent. It is a good idea to revoke the certificate when decommissioning or rebuilding the host. That way there are no unused certificates laying around on your master. The two different options for revoking a puppet certificate are to clean or revoke.
+CLEAN: TO REVOKE AND COMPLETELY REMOVE ALL PUPPET CERTIFICATES FOR A HOST
+
+   puppet cert clean agent1.localdomain
+REVOKE: TO REVOKE AND MOVE THE CERTIFICATE TO A CERTIFICATE REVOCATION LIST
+
+   puppet cert revoke agent1.localdomain
+
+**//Other Useful Commands//**
+--------------------
+To list all of the puppet certificates that have been signed:
+
+   puppet cert list --all
+To list an individual agent puppet certificate
+
+   puppet cert list agent1.localdomain
+To show the whole puppet certificate of agent
+
+   puppet cert print agent1.localdomain

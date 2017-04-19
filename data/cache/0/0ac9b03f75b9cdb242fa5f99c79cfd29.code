@@ -1,0 +1,12 @@
+<span class="co0">#!/bin/bash</span>
+<span class="re2">AUTHNAME</span>=<span class="st0">&quot;my.username&quot;</span>
+<span class="re2">CREDS</span>=<span class="st0">&quot;credentials=/home/<span class="es3">${USER}</span>/credentials.viam,iocharset=utf8,rw,gid=1000,uid=1000&quot;</span>
+<span class="re2">MOUNT1</span>=<span class="sy0">/</span>home<span class="sy0">/</span><span class="co1">${USER}</span><span class="sy0">/</span>NET_DIR
+<span class="re2">MOUNT2</span>=<span class="sy0">/</span>home<span class="sy0">/</span><span class="co1">${USER}</span><span class="sy0">/</span>NET<span class="sy0">/</span>DATA
+<span class="re2">MOUNT3</span>=<span class="sy0">/</span>home<span class="sy0">/</span><span class="co1">${USER}</span><span class="sy0">/</span>NET<span class="sy0">/</span>ENTERTAIN
+<span class="re2">MOUNT4</span>=<span class="sy0">/</span>home<span class="sy0">/</span><span class="co1">${USER}</span><span class="sy0">/</span>NET<span class="sy0">/</span>ENTERTAIN2
+&nbsp;
+mountpoint <span class="re5">-q</span> <span class="co1">${MOUNT1}</span>  <span class="sy0">||</span> <span class="kw2">sudo</span> mount.cifs <span class="sy0">//</span>192.168.12.11<span class="sy0">/</span>home$<span class="sy0">/</span><span class="co1">${AUTHNAME}</span> <span class="co1">${MOUNT1}</span> <span class="re5">-o</span> <span class="co1">${CREDS}</span>
+mountpoint <span class="re5">-q</span> <span class="co1">${MOUNT2}</span>  <span class="sy0">||</span> <span class="kw2">sudo</span> mount.cifs <span class="sy0">//</span>192.168.12.11<span class="sy0">/</span>data <span class="co1">${MOUNT2}</span> <span class="re5">-o</span> <span class="co1">${CREDS}</span>
+mountpoint <span class="re5">-q</span> <span class="co1">${MOUNT3}</span>  <span class="sy0">||</span> <span class="kw2">sudo</span> mount.cifs <span class="sy0">//</span>192.168.12.11<span class="sy0">/</span>entertainment <span class="co1">${MOUNT3}</span> <span class="re5">-o</span> <span class="co1">${CREDS}</span>
+mountpoint <span class="re5">-q</span> <span class="co1">${MOUNT4}</span>  <span class="sy0">||</span> <span class="kw2">sudo</span> mount.cifs <span class="sy0">//</span>192.168.12.11<span class="sy0">/</span>entertainment2 <span class="co1">${MOUNT4}</span> <span class="re5">-o</span> <span class="co1">${CREDS}</span>

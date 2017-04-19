@@ -1,0 +1,17 @@
+======= Systems Administrator Knowledge Base =======
+
+Welcome to my KB wiki! 
+----------------------
+You will find here documentation, instructions, guidelines, how to's and solutions on this wiki and everything that is IT related.
+
+
+**What does System Administrator (SA) mean?**
+------------------------------------------
+
+A system administrator (SA) is responsible for managing, overseeing and maintaining a multiuser computing     environment, such as a local area network (LAN). SA responsibilities vary, depending on an organization's requirements. SAs should possess strong technical knowledge and skills, as well as expertise in personnel management.
+
+A SA is also known as a systems administrator, sys admin or sysadmin. A small organization may have only one SA   on staff, while an enterprise usually has a full SA team.
+
+Most SAs have degrees in related fields, like IT, computer engineering, information management and computer science. Some technical training programs offer degrees or specialized SA certifications, such as Microsoft (MCP, MCSA, MCSE), Red Hat (RHCE, RHCSS) and Cisco (CCNA, CCIE). Not all SAs follow linear training paths. In fact, a growing number of professional SAs are self-taught through practical computing experience and open-source software training programs.
+
+(As described in [[http://www.techopedia.com/definition/4815/system-administrator-sa|Techopedia]])

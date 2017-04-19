@@ -1,0 +1,253 @@
+
+<h1 class="sectionedit1" id="introduction">Introduction</h1>
+<div class="level1">
+
+<p>
+MegaCli commands have presented a number of questions among our users for Cisco&#039;s Physical Security.  Here is an attempt to explain thier meaning and uses.
+</p>
+
+<p>
+See also: Cisco VSM RAID Viewer
+</p>
+
+<p>
+General Parameters
+Adapter parameter -aN
+The parameter -aN (where N is a number starting with zero or the string ALL) specifies the adapter ID. If you have only one controller it’s safe to use ALL instead of a specific ID, but you’re encouraged to use the ID for everything that makes changes to your RAID configuration.
+</p>
+
+<p>
+Physical drive parameter      -PhysDrv [E:S]
+For commands that operate on one or more pysical drives, the -PhysDrv [E:S] parameter is used, where E is the enclosure device ID in which the drive resides and S the slot number (starting with zero). You can get the enclosure device ID using MegaCli -EncInfo -aALL. The E:S syntax is also used for specifying the physical drives when creating a new RAID virtual drive (see 5).
+</p>
+
+<p>
+Virtual drive parameter -Lx
+The parameter -Lx is used for specifying the virtual drive (where x is a number starting with zero or the string all).
+</p>
+
+<p>
+Running the executable can be accomplished by:
+</p>
+
+<p>
+shell&gt; /opt/MegaRAID/MegaCli/MegaCli &lt;cmd&gt;
+or
+</p>
+
+<p>
+shell&gt; cd /opt/MegaRAID/MegaCli
+shell&gt; ./MegaCli &lt;cmd&gt;
+Gather information
+Controller information
+</p>
+<pre class="code">   MegaCli -AdpAllInfo -aALL
+   MegaCli -CfgDsply -aALL
+   MegaCli -adpeventlog -getevents -f lsi-events.log -a0 -nolog</pre>
+
+<p>
+Enclosure information
+</p>
+<pre class="code">   MegaCli -EncInfo -aALL</pre>
+
+<p>
+Virtual drive information
+</p>
+<pre class="code">   MegaCli -LDInfo -Lall -aALL</pre>
+
+<p>
+Physical drive information
+</p>
+<pre class="code">   MegaCli -PDList -aALL
+   MegaCli -PDInfo -PhysDrv [E:S] -aALL</pre>
+
+<p>
+Battery backup information      (Cisco MSPs do not have the battery backup unit installed, but in case yours has one)
+</p>
+<pre class="code">   MegaCli -AdpBbuCmd -aALL </pre>
+
+<p>
+Check Battery backup warning on boot.  If this is enabled on an MSP, it will require manual intervention every time the system boots
+</p>
+<pre class="code">   MegaCli -AdpGetProp BatWarnDsbl -a0 
+   </pre>
+
+<p>
+Controller management
+Silence active alarm
+</p>
+<pre class="code">   MegaCli -AdpSetProp AlarmSilence -aALL</pre>
+
+<p>
+Disable alarm
+</p>
+<pre class="code">   MegaCli -AdpSetProp AlarmDsbl -aALL</pre>
+
+<p>
+Enable alarm
+</p>
+<pre class="code">   MegaCli -AdpSetProp AlarmEnbl -aALL </pre>
+
+<p>
+Disable battery backup warning on system boot
+</p>
+<pre class="code">   MegaCli -AdpSetProp BatWarnDsbl -a0</pre>
+
+<p>
+Change the adapter rebuild rate to 60%:
+</p>
+<pre class="code">   MegaCli -AdpSetProp {RebuildRate -60} -aALL</pre>
+
+<p>
+Virtual drive management
+Create RAID 0, 1, 5 drive
+</p>
+<pre class="code">   MegaCli -CfgLdAdd -r(0|1|5) [E:S, E:S, ...] -aN</pre>
+
+<p>
+Create RAID 10 drive
+</p>
+<pre class="code">   MegaCli -CfgSpanAdd -r10 -Array0[E:S,E:S] -Array1[E:S,E:S] -aN</pre>
+
+<p>
+Remove drive
+</p>
+<pre class="code">   MegaCli -CfgLdDel -Lx -aN </pre>
+
+<p>
+Physical drive management
+Set state to offline
+</p>
+<pre class="code">   MegaCli -PDOffline -PhysDrv [E:S] -aN</pre>
+
+<p>
+Set state to online
+</p>
+<pre class="code">   MegaCli -PDOnline -PhysDrv [E:S] -aN</pre>
+
+<p>
+Mark as missing
+</p>
+<pre class="code">   MegaCli -PDMarkMissing -PhysDrv [E:S] -aN</pre>
+
+<p>
+Prepare for removal
+</p>
+<pre class="code">   MegaCli -PdPrpRmv -PhysDrv [E:S] -aN</pre>
+
+<p>
+Replace missing drive
+</p>
+<pre class="code">   MegaCli -PdReplaceMissing -PhysDrv [E:S] -ArrayN -rowN -aN
+   </pre>
+
+<p>
+The number N of the array parameter is the Span Reference you get using MegaCli -CfgDsply -aALL and the number N of the row parameter is the Physical Disk in that span or array starting with zero (it’s not the physical disk’s slot!).
+</p>
+
+<p>
+Rebuild drive - Drive status should be “Firmware state: Rebuild”
+</p>
+<pre class="code">   MegaCli -PDRbld -Start -PhysDrv [E:S] -aN
+   MegaCli -PDRbld -Stop -PhysDrv [E:S] -aN
+   MegaCli -PDRbld -ShowProg -PhysDrv [E:S] -aN     
+   MegaCli -PDRbld -ProgDsply -physdrv [E:S] -aN</pre>
+
+<p>
+Clear drive
+</p>
+<pre class="code">   MegaCli -PDClear -Start -PhysDrv [E:S] -aN
+   MegaCli -PDClear -Stop -PhysDrv [E:S] -aN
+   MegaCli -PDClear -ShowProg -PhysDrv [E:S] -aN</pre>
+
+<p>
+Bad to good
+</p>
+<pre class="code">   MegaCli -PDMakeGood -PhysDrv[E:S] -aN
+   Changes drive in state Unconfigured-Bad to Unconfigured-Good.</pre>
+
+<p>
+Hot spare management
+Set global hot spare
+</p>
+<pre class="code">   MegaCli -PDHSP -Set -PhysDrv [E:S] -aN
+ </pre>
+
+<p>
+Remove hot spare
+</p>
+<pre class="code">   MegaCli -PDHSP -Rmv -PhysDrv [E:S] -aN
+ </pre>
+
+<p>
+Set dedicated hot spare
+</p>
+<pre class="code">   MegaCli -PDHSP -Set -Dedicated -ArrayN,M,... -PhysDrv [E:S] -aN </pre>
+
+<p>
+Walkthrough: Rebuild a Drive that is marked &#039;Foreign&#039; when Inserted:
+</p>
+
+<p>
+Bad to good
+</p>
+<pre class="code">  MegaCli -PDMakeGood -PhysDrv [E:S]  -aALL</pre>
+
+<p>
+Clear the foreign setting
+</p>
+<pre class="code">   MegaCli -CfgForeign -Clear -aALL</pre>
+
+<p>
+Set global hot spare
+</p>
+<pre class="code">   MegaCli -PDHSP -Set -PhysDrv [E:S] -aN</pre>
+
+<p>
+Walkthrough: Change/replace a drive
+1. Set the drive offline, if it is not already offline due to an error
+</p>
+<pre class="code">   MegaCli -PDOffline -PhysDrv [E:S] -aN</pre>
+
+<p>
+2. Mark the drive as missing
+</p>
+<pre class="code">   MegaCli -PDMarkMissing -PhysDrv [E:S] -aN</pre>
+
+<p>
+3. Prepare drive for removal
+</p>
+<pre class="code">   MegaCli -PDPrpRmv -PhysDrv [E:S] -aN</pre>
+
+<p>
+4. Change/replace the drive
+</p>
+
+<p>
+5. If you’re using hot spares then the replaced drive should become your new hot spare drive
+</p>
+<pre class="code">   MegaCli -PDHSP -Set -PhysDrv [E:S] -aN</pre>
+
+<p>
+6. In case you’re not working with hot spares, you must re-add the new drive to your RAID virtual drive and start the rebuilding
+</p>
+<pre class="code">   MegaCli -PdReplaceMissing -PhysDrv [E:S] -ArrayN -rowN -aN
+   MegaCli -PDRbld -Start -PhysDrv [E:S] -aN</pre>
+
+<p>
+Gathering Standard logs
+On every instance of a hard drive problem with an MSP server, we need to run the following commands to have any information about the problem:
+</p>
+<pre class="code"> shell&gt; rm –f MegaSAS.log
+ shell&gt; /opt/MegaRAID/MegaCli/MegaCli -adpallinfo -a0
+ shell&gt; /opt/MegaRAID/MegaCli/MegaCli -encinfo -a0
+ shell&gt; /opt/MegaRAID/MegaCli/MegaCli -ldinfo -lall -a0
+ shell&gt; /opt/MegaRAID/MegaCli/MegaCli -pdlist -a0
+ shell&gt; /opt/MegaRAID/MegaCli/MegaCli -adpeventlog -getevents -f lsi-events.log -a0 -nolog
+ shell&gt; /opt/MegaRAID/MegaCli/MegaCli -fwtermlog -dsply -a0 -nolog &gt; lsi-fwterm.log</pre>
+
+<p>
+Collect the MegaSAS.log, lsi-events.log, and the lsi-fwterm.log files from the directory where the commands are run (they can be run from any directory on the MSP server) and attach the logs to the service request. You may use a program such as WinSCP (freeware) to pull the files off of the server.
+</p>
+
+</div>

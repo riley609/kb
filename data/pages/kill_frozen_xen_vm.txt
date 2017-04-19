@@ -1,0 +1,53 @@
+====== How to Shut Down a Virtual Machine which is Unresponsive in the Pending or Amber State ======
+
+===== Objective =====
+
+This article describes how to shut down a virtual machine, which is in a pending state (or amber state), from the %%XenServer%% control domain.
+
+Sometimes, when you initiate a shutdown or a reboot from the %%XenCenter%%, the virtual machine is in an unresponsive state when it is in the pending state (or amber state), and the task being performed is also in unresponsive state.
+
+The **xe-toolstack-restart ** refreshes all tasks and displays the virtual machine to be in a running state, but the virtual machine would not be available or be responding.
+
+Basically the process (dom-id) associated with the virtual machine is unresponsive in the %%XenServer%% control domain. The only method to recover is to terminate the dom-id for the virtual machine or reboot the %%XenServer%%.
+
+===== Instructions =====
+
+You require the following components:
+
+  * Console session to the %%XenServer%% control domain
+
+  * Intermediate Linux / %%XenServer%% administration skills
+
+To shut down a virtual machine, which is in an amber state from %%XenServer%% control domain, complete the following procedure:
+
+=== Get the UUID ===
+  * Select the virtual machine in %%XenCenter%% and check the general tab to obtain the UUID of the virtual machine, which is in an unresponsive state:\\
+{{:wiki:xencentre-frozen-vm.png?nolink|}}
+
+=== Check UUID ===
+  * Run the following command to check the dom-id of the virtual machine in the %%XenServer%% control domain: 
+
+  list_domains | grep <UUID from step1> 
+
+  * Following is a sample of the preceding command: 
+
+  [root@Xen6 ~]# list_domains | grep bcdb1445-1f28-9600-ae84-53c254167ae6  
+  Output : 51 | bcdb1445-1f28-9600-ae84-53c254167ae6 | H 
+  
+**51** – the dom-id of the VM \\ 
+**bcdb1445-1f28-9600-ae84-53c254167ae6** – UUID of the VM \\ 
+**H** – state of the virtual machine (H indicates that this is a HVM guest, typically it means this is a Windows virtual machine.) \\ 
+\\
+
+=== Destroy the Session for that Domain ID ===
+  * Run the following command to destroy the dom-id of the virtual machine: \\ 
+
+  /opt/xensource/debug/xenops destroy_domain –domid <ID from step2>
+
+  * Following is a sample of the preceding command: \\ 
+
+  opt/xensource/debug/xenops destroy_domain –domid 51
+
+\\
+Refer to the Knowledge Center article CTX127896 – [[https://support.citrix.com/article/CTX127896|How to Use the XenServer Xentop Utility]] for more information about the other possible Virtual Machine states.\\
+\\

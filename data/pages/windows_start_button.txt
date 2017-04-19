@@ -1,0 +1,18 @@
+====== WINDOWS 8 & SERVER 2012 Start Button ======
+
+You can download %%Win8 StartButton%% from official site [[http://windows8startbutton.com/|here]]. \\
+Your windows 2012 has to have internet connection to continue the installation. 
+
+Select ‘Custom installation’ as shown below.
+
+{{:wiki:win8_svr2012_image1.png?nolink|}}
+
+By this custom installation method we can avoid unwanted extra programs during the installation as below.
+
+{{:wiki:win8_svr2012_image2.png?nolink|}}
+
+Once installation is completed, you can see the familiar start button and start menu in Windows 2012 or 2012 R2 server.
+
+To customize this start button and menu, you have to use the particular application settings only. 
+Do not look for the normal Windows settings for it.
+

@@ -1,0 +1,10 @@
+====== Enabling Mcrypt ======
+
+  cd /etc/php5/cli/conf.d
+  
+  ln -s ../mods.available/mcrypt.ini 20-mcrypt.ini
+
+And similarly for 
+  /etc/php5/apache2/conf.d.
+
+  php -m

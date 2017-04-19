@@ -1,0 +1,115 @@
+
+<h1 class="sectionedit1" id="how_to_shut_down_a_virtual_machine_which_is_unresponsive_in_the_pending_or_amber_state">How to Shut Down a Virtual Machine which is Unresponsive in the Pending or Amber State</h1>
+<div class="level1">
+
+</div>
+<!-- EDIT1 SECTION "How to Shut Down a Virtual Machine which is Unresponsive in the Pending or Amber State" [1-102] -->
+<h2 class="sectionedit2" id="objective">Objective</h2>
+<div class="level2">
+
+<p>
+This article describes how to shut down a virtual machine, which is in a pending state (or amber state), from the XenServer control domain.
+</p>
+
+<p>
+Sometimes, when you initiate a shutdown or a reboot from the XenCenter, the virtual machine is in an unresponsive state when it is in the pending state (or amber state), and the task being performed is also in unresponsive state.
+</p>
+
+<p>
+The <strong>xe-toolstack-restart </strong> refreshes all tasks and displays the virtual machine to be in a running state, but the virtual machine would not be available or be responding.
+</p>
+
+<p>
+Basically the process (dom-id) associated with the virtual machine is unresponsive in the XenServer control domain. The only method to recover is to terminate the dom-id for the virtual machine or reboot the XenServer.
+</p>
+
+</div>
+<!-- EDIT2 SECTION "Objective" [103-908] -->
+<h2 class="sectionedit3" id="instructions">Instructions</h2>
+<div class="level2">
+
+<p>
+You require the following components:
+</p>
+<ul>
+<li class="level1"><div class="li"> Console session to the XenServer control domain</div>
+</li>
+</ul>
+<ul>
+<li class="level1"><div class="li"> Intermediate Linux / XenServer administration skills</div>
+</li>
+</ul>
+
+<p>
+To shut down a virtual machine, which is in an amber state from XenServer control domain, complete the following procedure:
+</p>
+
+</div>
+
+<h4 id="get_the_uuid">Get the UUID</h4>
+<div class="level4">
+<ul>
+<li class="level1"><div class="li"> Select the virtual machine in XenCenter and check the general tab to obtain the UUID of the virtual machine, which is in an unresponsive state:<br/>
+</div>
+</li>
+</ul>
+
+<p>
+<img src="/kb/lib/exe/fetch.php?media=wiki:xencentre-frozen-vm.png" class="media" alt="" />
+</p>
+
+</div>
+
+<h4 id="check_uuid">Check UUID</h4>
+<div class="level4">
+<ul>
+<li class="level1"><div class="li"> Run the following command to check the dom-id of the virtual machine in the XenServer control domain: </div>
+</li>
+</ul>
+<pre class="code">list_domains | grep &lt;UUID from step1&gt; </pre>
+<ul>
+<li class="level1"><div class="li"> Following is a sample of the preceding command: </div>
+</li>
+</ul>
+<pre class="code">[root@Xen6 ~]# list_domains | grep bcdb1445-1f28-9600-ae84-53c254167ae6  
+Output : 51 | bcdb1445-1f28-9600-ae84-53c254167ae6 | H </pre>
+
+<p>
+<strong>51</strong> – the dom-id of the VM <br/>
+
+<strong>bcdb1445-1f28-9600-ae84-53c254167ae6</strong> – UUID of the VM <br/>
+
+<strong>H</strong> – state of the virtual machine (H indicates that this is a HVM guest, typically it means this is a Windows virtual machine.) <br/>
+
+<br/>
+
+</p>
+
+</div>
+
+<h4 id="destroy_the_session_for_that_domain_id">Destroy the Session for that Domain ID</h4>
+<div class="level4">
+<ul>
+<li class="level1"><div class="li"> Run the following command to destroy the dom-id of the virtual machine: <br/>
+</div>
+</li>
+</ul>
+<pre class="code">/opt/xensource/debug/xenops destroy_domain –domid &lt;ID from step2&gt;</pre>
+<ul>
+<li class="level1"><div class="li"> Following is a sample of the preceding command: <br/>
+</div>
+</li>
+</ul>
+<pre class="code">opt/xensource/debug/xenops destroy_domain –domid 51</pre>
+
+<p>
+<br/>
+
+Refer to the Knowledge Center article CTX127896 – <a href="https://support.citrix.com/article/CTX127896" class="urlextern" title="https://support.citrix.com/article/CTX127896"  rel="nofollow">How to Use the XenServer Xentop Utility</a> for more information about the other possible Virtual Machine states.<br/>
+
+<br/>
+
+</p>
+
+</div>
+<!-- EDIT3 SECTION "Instructions" [909-] -->

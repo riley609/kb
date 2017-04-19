@@ -1,0 +1,47 @@
+
+<h2 class="sectionedit1" id="fixing_a_broken_or_corrupt_windows_mbr">Fixing a broken or corrupt Windows MBR</h2>
+<div class="level2">
+
+<p>
+<strong>Links</strong>
+</p>
+
+<p>
+<a href="http://serverfault.com/questions/233592/how-to-fix-windows-2008-r2-bootmgr-is-missing" class="urlextern" title="http://serverfault.com/questions/233592/how-to-fix-windows-2008-r2-bootmgr-is-missing"  rel="nofollow">Serverfault: Fixing BOOTMGR Missing</a>
+</p>
+
+<p>
+<a href="http://social.technet.microsoft.com/Forums/en-US/0e6a7b6a-70de-41af-b2c8-5f8f3c86cef7/bootmgr-is-missing-in-windows-server-2008-r2?forum=winservergen" class="urlextern" title="http://social.technet.microsoft.com/Forums/en-US/0e6a7b6a-70de-41af-b2c8-5f8f3c86cef7/bootmgr-is-missing-in-windows-server-2008-r2?forum=winservergen"  rel="nofollow">Technet: BOOTMGR Missing</a>
+</p>
+
+<p>
+Initial condition: will not boot, says “NTLDR IS MISSING”. 
+Booting off Win2k8r2 install CD. In recovery window, no windows installations appear.
+</p>
+
+<p>
+<strong>1. Boot with Windows CD/DVD into Recovery mode → COMMAND PROMPT</strong>
+</p>
+
+<p>
+<strong>2. Type the following:</strong>
+</p>
+<ul>
+<li class="level1"><div class="li"> BCDBoot C:\Windows </div>
+</li>
+<li class="level1"><div class="li"> Bootrec /rebuildbcd</div>
+</li>
+<li class="level1"><div class="li"> x:\sources\recovery\StartRep.exe</div>
+</li>
+<li class="level1"><div class="li"> bootrec /fixmbr</div>
+</li>
+<li class="level1"><div class="li"> bootrec /fixboot</div>
+</li>
+<li class="level1"><div class="li"> bootrec /rebuildbcd</div>
+</li>
+<li class="level1"><div class="li"> x:\sources\recovery\StartRep.exe</div>
+</li>
+</ul>
+<hr />
+
+</div>

@@ -1,0 +1,53 @@
+
+<h1 class="sectionedit1" id="mount_network_shares_linux">Mount network shares (Linux)</h1>
+<div class="level1">
+
+<p>
+The fileserver is a Windows Server.<br/>
+
+To mount network shares on a Windows Server two packages must be available on your Linux computer:<br/>
+
+<code>smbclient</code> and <code>cifs-utils</code>
+</p>
+
+<p>
+<strong>1. Check the availability of network shares on viam-fs001.viamedia.co.za:</strong>
+</p>
+<pre class="code">   smbclient -L servername -U your.username</pre>
+
+<p>
+<strong>2. Mount e.g. the network share name <code>data</code> into your local file system:</strong>
+</p>
+
+<p>
+a) Create a local mount point e.g. <code>VM-data</code> in your home directory:
+</p>
+<pre class="code">   mkdir /home/your_username/VM-data</pre>
+
+<p>
+b) Mount the network share <code>data</code> to your local moint point:
+</p>
+<pre class="code">   sudo mount -t cifs -o username=your.username,rw,gid=1000,uid=1000 //servername.mydomain.co.za/data VM-data</pre>
+<dl class="code">
+<dt><a href="/kbtree/doku.php?do=export_code&amp;id=mount_windows_network_shares_on_linux&amp;codeblock=0" title="Download Snippet" class="mediafile mf_sh">homedir_mount.sh</a></dt>
+<dd><pre class="code bash"><span class="co0">#!/bin/bash</span>
+<span class="re2">AUTHNAME</span>=<span class="st0">&quot;my.username&quot;</span>
+<span class="re2">CREDS</span>=<span class="st0">&quot;credentials=/home/<span class="es3">${USER}</span>/credentials.viam,iocharset=utf8,rw,gid=1000,uid=1000&quot;</span>
+<span class="re2">MOUNT1</span>=<span class="sy0">/</span>home<span class="sy0">/</span><span class="co1">${USER}</span><span class="sy0">/</span>NET_DIR
+<span class="re2">MOUNT2</span>=<span class="sy0">/</span>home<span class="sy0">/</span><span class="co1">${USER}</span><span class="sy0">/</span>NET<span class="sy0">/</span>DATA
+<span class="re2">MOUNT3</span>=<span class="sy0">/</span>home<span class="sy0">/</span><span class="co1">${USER}</span><span class="sy0">/</span>NET<span class="sy0">/</span>ENTERTAIN
+<span class="re2">MOUNT4</span>=<span class="sy0">/</span>home<span class="sy0">/</span><span class="co1">${USER}</span><span class="sy0">/</span>NET<span class="sy0">/</span>ENTERTAIN2
+&nbsp;
+mountpoint <span class="re5">-q</span> <span class="co1">${MOUNT1}</span>  <span class="sy0">||</span> <span class="kw2">sudo</span> mount.cifs <span class="sy0">//</span>192.168.12.11<span class="sy0">/</span>home$<span class="sy0">/</span><span class="co1">${AUTHNAME}</span> <span class="co1">${MOUNT1}</span> <span class="re5">-o</span> <span class="co1">${CREDS}</span>
+mountpoint <span class="re5">-q</span> <span class="co1">${MOUNT2}</span>  <span class="sy0">||</span> <span class="kw2">sudo</span> mount.cifs <span class="sy0">//</span>192.168.12.11<span class="sy0">/</span>data <span class="co1">${MOUNT2}</span> <span class="re5">-o</span> <span class="co1">${CREDS}</span>
+mountpoint <span class="re5">-q</span> <span class="co1">${MOUNT3}</span>  <span class="sy0">||</span> <span class="kw2">sudo</span> mount.cifs <span class="sy0">//</span>192.168.12.11<span class="sy0">/</span>entertainment <span class="co1">${MOUNT3}</span> <span class="re5">-o</span> <span class="co1">${CREDS}</span>
+mountpoint <span class="re5">-q</span> <span class="co1">${MOUNT4}</span>  <span class="sy0">||</span> <span class="kw2">sudo</span> mount.cifs <span class="sy0">//</span>192.168.12.11<span class="sy0">/</span>entertainment2 <span class="co1">${MOUNT4}</span> <span class="re5">-o</span> <span class="co1">${CREDS}</span></pre>
+</dd></dl>
+<dl class="code">
+<dt><a href="/kbtree/doku.php?do=export_code&amp;id=mount_windows_network_shares_on_linux&amp;codeblock=1" title="Download Snippet" class="mediafile mf_viam">credentials.viam</a></dt>
+<dd><pre class="code config">username=my.username
+password=**********
+domain=mydomain</pre>
+</dd></dl>
+
+</div>

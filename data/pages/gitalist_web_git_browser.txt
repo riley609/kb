@@ -1,0 +1,49 @@
+====== How to install Gitalist git Browser (Ubuntu) ======
+----------------------------------------------------------
+
+**
+1. Install Cpanm**
+-------------
+
+     ~$ curl -L http://cpanmin.us | perl - --sudo App::cpanminus
+     
+     
+One caveat here is that cpanm’s hash bang looks for perl “straight up”, which for some reason didn’t work for me. Instead of learning why it didn’t work I went ahead and pointed cpanm to where perl was located on my machine. Edit /usr/local/bin/cpanm in an editor like vi or vim. You can see where your machine has perl installed by running
+
+     ~$ which perl
+     
+Change the hash bang from #!perl to #!/usr/bin/perl. Once cpanm is in place and the hash bang is changed to point to the location of perl, we can move on.
+-------------------------
+
+**2. Install Compiler**
+-----------------
+Gitalist installation via cpan or cpanm. 
+
+     ~$ apt-get build-essential
+     
+**3. Install Gitalist**
+-------------------
+
+    ~$ cpanm Gitalist -l ~/gitalist_deps/
+    
+.....this will take some time.....
+Everything being installed should have ended in OK. If not okay use ''//cpanm -f//'' to force installation.
+
+**4. Creating Some “Bash variables”**
+---------------------
+
+NOTE: I keep ALL my git repos in one folder (/opt/git/). 
+
+    ~$ export PERL5LIB=~/gitalist_deps/lib/perl5
+    ~$ export GITALIST_REPO_DIR=/opt/git
+
+--------------------------------------
+    
+5. Running Gitalist
+---------------
+We are all done and ready to start Gitalist!
+
+   ~$ perl ~/gitalist_deps/bin/gitalist_server.pl
+  
+Your server is running at //**http://your-host-name:3000**//
+  

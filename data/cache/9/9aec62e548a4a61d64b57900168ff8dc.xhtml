@@ -1,0 +1,40 @@
+
+<h1 class="sectionedit1" id="moving_vm_backend_storage">Moving VM Backend storage</h1>
+<div class="level1">
+
+</div>
+<!-- EDIT1 SECTION "Moving VM Backend storage" [1-41] -->
+<h2 class="sectionedit2" id="from_iscsi_-_das_local">From iSCSi -&gt; DAS/Local</h2>
+<div class="level2">
+
+<p>
+Process:
+</p>
+<pre class="code">1. Create SNAPSHOT
+2. Create VM from SNAPSHOT -&gt; Specify storage as **LOCAL** and UN-TICK &quot;start VM on completion&quot;
+3. When completed (approx 30min per 20G), Start VM, click on Networking TAB and disable network as soon as Greyout 
+   is lifted from that option, disabling networking.
+4. Log in on console via XENSERVER, edit IP to NEW IP remembering the following:
+           a:) Change IP in /etc/hosts as well if not 127.0.1.1 or 127.0.0.1
+           b:) grep for old IP in all configuration locations to ensure that any hardcoded IP&#039;s 
+               are updated as well ie httpd.conf -&gt; LISTEN parameter
+5. ifdown eth0, ENABLE networking on XENSERVER
+6. Update internal DNS, flush DNS on nagios, cacti and jump, restart DNS on inf-dc-02
+7. Check that all services are running
+8. Repoint firewall to NEW internal IP
+9. Book maintenance on NAGIOS for server
+10. Check if all services are pointing to NEW server
+11. Check DB permissions and Access if any
+12. Shut down services on OLD server or FLUSH all processes/sessions from OLD server</pre>
+
+</div>
+<!-- EDIT2 SECTION "From iSCSi -> DAS/Local" [42-1160] -->
+<h2 class="sectionedit3" id="from_das_local_-_iscsi">From DAS/Local -&gt; iSCSi</h2>
+<div class="level2">
+
+<p>
+Same as above, just reverse step 2 → Specify <strong>iSCSi</strong> as storage
+</p>
+
+</div>
+<!-- EDIT3 SECTION "From DAS/Local -> iSCSi" [1161-] -->
